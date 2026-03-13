@@ -1,0 +1,81 @@
+# ═══════════════════════════════════════
+# Python
+# ═══════════════════════════════════════
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.whl
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+
+# ═══════════════════════════════════════
+# IDE / Editor
+# ═══════════════════════════════════════
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# ═══════════════════════════════════════
+# OS Files
+# ═══════════════════════════════════════
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.lnk
+
+# ═══════════════════════════════════════
+# Environment & Secrets
+# ═══════════════════════════════════════
+.env
+.env.local
+.env.production
+*.pem
+*.key
+
+# ═══════════════════════════════════════
+# EasyOCR Model Cache
+# ═══════════════════════════════════════
+~/.EasyOCR/
+model/
+*.pth
+*.pt
+
+# ═══════════════════════════════════════
+# Logs & Temp
+# ═══════════════════════════════════════
+*.log
+logs/
+tmp/
+temp/
+
+# ═══════════════════════════════════════
+# Node (if frontend ever uses it)
+# ═══════════════════════════════════════
+node_modules/
+package-lock.json
+
+# ═══════════════════════════════════════
+# Uploaded images (local testing)
+# ═══════════════════════════════════════
+uploads/
+*.png
+*.jpg
+*.jpeg
+*.webp
+!frontend/*.png

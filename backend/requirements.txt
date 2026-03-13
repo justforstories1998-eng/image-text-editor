@@ -1,0 +1,8 @@
+flask==3.1.1
+flask-cors==5.0.1
+flask-compress==1.17
+easyocr==1.7.2
+Pillow==11.1.0
+numpy==1.26.4
+certifi==2024.12.14
+gunicorn==23.0.0

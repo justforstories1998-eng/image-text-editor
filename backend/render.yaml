@@ -1,0 +1,27 @@
+# ═══════════════════════════════════════
+# Render.com Deployment Configuration
+# ═══════════════════════════════════════
+
+services:
+  - type: web
+    name: ocr-text-editor-api
+    runtime: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --preload
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: OCR_LANGS
+        value: en
+      - key: OCR_GPU
+        value: false
+      - key: MAX_IMAGE_MB
+        value: 25
+      - key: ALLOWED_ORIGINS
+        value: "*"
+    healthCheckPath: /api/health
+    autoDeploy: true
