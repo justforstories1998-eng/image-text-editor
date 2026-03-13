@@ -8,10 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 <style>
-/*═══════════════════════════════════════════════
-  CSS — 3D Red Theme  ·  Polished Modern UI
-  (EXISTING — UNCHANGED)
-═══════════════════════════════════════════════*/
 :root{
   --c1:#e63946;--c1h:#c1121f;--c1l:#ff6b6b;
   --c1g:rgba(230,57,70,.32);--c1s:rgba(230,57,70,.10);
@@ -110,6 +106,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
   display:flex;justify-content:center;align-items:center;min-height:340px;position:relative;
   box-shadow:inset 0 2px 6px rgba(0,0,0,.5)}
 #cv{display:block;cursor:crosshair}
+/* ── Pan / Move Image Mode ─────── */
+#cv.pan-cursor{cursor:grab !important}
+#cv.pan-cursor:active,#cv.panning{cursor:grabbing !important}
+.pan-hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+  padding:.3rem .7rem;border-radius:6px;font-size:.65rem;font-weight:700;
+  background:rgba(34,211,238,.12);color:var(--cy);border:1px solid rgba(34,211,238,.2);
+  pointer-events:none;opacity:0;transition:opacity .3s;z-index:6;white-space:nowrap}
+.pan-hint.on{opacity:1}
 .st{display:flex;gap:.6rem;flex-wrap:wrap}
 .sc{display:flex;align-items:center;gap:.3rem;padding:.25rem .6rem;background:var(--bg3);
   border:1px solid var(--bdr);border-radius:16px;font-size:.68rem;color:var(--tx2);font-weight:600}
@@ -213,8 +217,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
 .pf{display:flex;flex-direction:column;gap:.15rem}
 .pf label{font-size:.62rem;color:var(--tx3);font-weight:600;text-transform:uppercase}
 .pf input{padding:.3rem .4rem;border:1px solid var(--bdr);border-radius:5px;
-  background:var(--bg3);color:var(--tx);font-family:inherit;font-size:.76rem;
-  outline:none;width:100%}
+  background:var(--bg3);color:var(--tx);font-family:inherit;font-size:.76rem;outline:none;width:100%}
 .pf input:focus{border-color:var(--c1)}
 .toast{position:fixed;bottom:1.5rem;right:1.5rem;padding:.7rem 1.3rem;border-radius:10px;
   font-size:.85rem;font-weight:600;z-index:2000;transform:translateY(80px);opacity:0;transition:all .35s;
@@ -224,14 +227,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
 .toast.no{background:linear-gradient(135deg,var(--no),#c0392b);color:#fff}
 .toast.info{background:linear-gradient(135deg,var(--c1),var(--c1h));color:#fff}
 .ft{text-align:center;padding:1.2rem;color:var(--tx3);font-size:.75rem;border-top:1px solid var(--bdr);margin-top:1.5rem}
-
-/*═══════════════════════════════════════════════
-  NEW CSS — Mode Switcher, Object Tools,
-  Background Editor, Image Search, Undo/Redo,
-  Enhance, Snap Guides, History Timeline
-═══════════════════════════════════════════════*/
-
-/* ── Mode Switcher Bar ──────────── */
 .mode-bar{display:none;background:var(--bg1);border-bottom:1px solid var(--bdr);padding:.35rem 1.2rem;
   gap:.3rem;align-items:center;z-index:9}
 .mode-bar.on{display:flex}
@@ -244,8 +239,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
   color:#fff;box-shadow:var(--shBtn)}
 .mode-btn i{font-size:.72rem}
 .mode-sep{width:1px;height:28px;background:var(--bdr);margin:0 .3rem}
-
-/* ── Undo / Redo Floating Bar ───── */
 .undo-bar{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);
   display:none;align-items:center;gap:.3rem;padding:.4rem .6rem;
   background:rgba(20,20,26,.95);border:1px solid var(--bdr);border-radius:12px;
@@ -257,11 +250,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
 .undo-btn:hover:not(:disabled){border-color:var(--c1);background:var(--bg4)}
 .undo-btn:active:not(:disabled){transform:translateY(1px);box-shadow:none}
 .undo-btn:disabled{opacity:.3;cursor:not-allowed}
-.undo-count{font-size:.65rem;color:var(--tx3);font-weight:700;min-width:50px;text-align:center;
-  font-family:monospace}
+.undo-count{font-size:.65rem;color:var(--tx3);font-weight:700;min-width:50px;text-align:center;font-family:monospace}
 .undo-sep{width:1px;height:24px;background:var(--bdr2);margin:0 .15rem}
-
-/* ── Object Mode Panel ──────────── */
 .obj-panel{display:none;flex-direction:column;overflow-y:auto}
 .obj-panel.on{display:flex}
 .obj-toolbar{display:flex;gap:.3rem;padding:.5rem .8rem;border-bottom:1px solid var(--bdr);
@@ -276,10 +266,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
   background:linear-gradient(135deg,var(--cy),#0abde3);box-shadow:0 2px 0 rgba(0,0,0,.25)}
 .obj-name{flex:1;font-size:.82rem;font-weight:600}
 .obj-type{font-size:.62rem;color:var(--cy);font-weight:700;text-transform:uppercase;
-  padding:.15rem .4rem;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.15);
-  border-radius:4px}
-
-/* ── Object Edit Properties ─────── */
+  padding:.15rem .4rem;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.15);border-radius:4px}
 .obj-props{display:none;flex-direction:column;overflow-y:auto;flex:1}
 .obj-props.on{display:flex}
 .obj-action-grid{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;padding:.6rem .8rem}
@@ -293,13 +280,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
 .obj-act-btn i{font-size:1.1rem;color:var(--cy)}
 .obj-act-btn.danger i{color:var(--no)}
 .obj-act-btn.danger:hover{border-color:var(--no)}
-
-/* ── Background Editor Panel ───── */
 .bg-panel{display:none;flex-direction:column;overflow-y:auto}
 .bg-panel.on{display:flex}
 .bg-preview{margin:.6rem .8rem;height:80px;border-radius:8px;border:1px solid var(--bdr);
-  background:var(--bg3);overflow:hidden;position:relative;display:flex;align-items:center;
-  justify-content:center}
+  background:var(--bg3);overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
 .bg-preview img{width:100%;height:100%;object-fit:cover;opacity:.6}
 .bg-preview .bg-label{position:absolute;font-size:.68rem;font-weight:700;color:#fff;
   background:rgba(0,0,0,.6);padding:.2rem .5rem;border-radius:4px;backdrop-filter:blur(4px)}
@@ -321,8 +305,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
   border-radius:50%;display:grid;place-items:center;font-size:.55rem}
 .bg-preserve-badge.locked{background:var(--ok);color:#fff}
 .bg-preserve-badge.unlocked{background:var(--wa);color:#000}
-
-/* ── Image Search Modal ─────────── */
 .search-modal{display:none;position:fixed;inset:0;z-index:900;background:rgba(9,9,11,.96);
   backdrop-filter:blur(12px);flex-direction:column}
 .search-modal.on{display:flex}
@@ -341,8 +323,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
   outline:none;transition:all .15s;position:relative}
 .search-input:focus{border-color:var(--cy);box-shadow:0 0 0 3px rgba(34,211,238,.15)}
 .search-input-wrap{flex:1;position:relative}
-.search-input-wrap i{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);
-  color:var(--tx3);font-size:.85rem}
+.search-input-wrap i{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);color:var(--tx3);font-size:.85rem}
 .search-go{padding:.7rem 1.5rem;background:linear-gradient(135deg,var(--cy),#0abde3);
   border:none;border-radius:10px;color:#000;font-weight:700;cursor:pointer;font-family:inherit;
   font-size:.85rem;box-shadow:0 3px 0 #0e7490;transition:all .15s}
@@ -360,8 +341,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
 .search-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.6rem}
 .search-item{border-radius:10px;overflow:hidden;border:2px solid var(--bdr);cursor:pointer;
   transition:all .2s;position:relative;aspect-ratio:1;background:var(--bg3)}
-.search-item:hover{border-color:var(--cy);transform:scale(1.03);
-  box-shadow:0 4px 16px rgba(34,211,238,.15)}
+.search-item:hover{border-color:var(--cy);transform:scale(1.03);box-shadow:0 4px 16px rgba(34,211,238,.15)}
 .search-item img{width:100%;height:100%;object-fit:cover;transition:opacity .3s}
 .search-item .search-use{position:absolute;bottom:.4rem;right:.4rem;padding:.3rem .6rem;
   background:linear-gradient(135deg,var(--cy),#0abde3);border:none;border-radius:6px;
@@ -370,10 +350,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
 .search-item:hover .search-use{opacity:1}
 .search-empty{text-align:center;padding:3rem;color:var(--tx3)}
 .search-empty i{font-size:2.5rem;display:block;margin-bottom:.8rem;color:var(--bdr2)}
-
-/* ── Enhancement Panel ──────────── */
-.enhance-panel{display:none;flex-direction:column;padding:.6rem .8rem;gap:.5rem;
-  border-top:1px solid var(--bdr)}
+.enhance-panel{display:none;flex-direction:column;padding:.6rem .8rem;gap:.5rem;border-top:1px solid var(--bdr)}
 .enhance-panel.on{display:flex}
 .enh-onetap{padding:.6rem;background:linear-gradient(135deg,rgba(249,202,36,.06),rgba(251,146,60,.04));
   border:1px solid rgba(249,202,36,.15);border-radius:8px;display:flex;align-items:center;
@@ -387,10 +364,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
 .enh-slider{display:flex;align-items:center;gap:.4rem}
 .enh-slider label{font-size:.68rem;color:var(--tx2);font-weight:600;min-width:68px}
 .enh-slider input[type=range]{flex:1;accent-color:var(--go);height:3px}
-.enh-slider span{font-size:.7rem;color:var(--go);font-weight:700;min-width:28px;text-align:right;
-  font-family:monospace}
-
-/* ── History Timeline ───────────── */
+.enh-slider span{font-size:.7rem;color:var(--go);font-weight:700;min-width:28px;text-align:right;font-family:monospace}
 .history-panel{display:none;position:fixed;bottom:0;left:0;right:0;
   background:rgba(14,14,20,.97);border-top:1px solid var(--bdr);
   backdrop-filter:blur(12px);z-index:40;max-height:160px}
@@ -410,14 +384,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
 .history-snap canvas{width:100%;height:48px;display:block;background:var(--bg3)}
 .history-snap .hs-label{font-size:.52rem;color:var(--tx3);padding:.2rem .3rem;text-align:center;
   font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-/* ── Smart Snap Guides ──────────── */
-.snap-guide-h,.snap-guide-v{position:absolute;background:rgba(34,211,238,.5);z-index:5;
-  pointer-events:none;display:none}
+.snap-guide-h,.snap-guide-v{position:absolute;background:rgba(34,211,238,.5);z-index:5;pointer-events:none;display:none}
 .snap-guide-h{height:1px;left:0;right:0}
 .snap-guide-v{width:1px;top:0;bottom:0}
-
-/* ── Context Menu ───────────────── */
 .ctx-menu{display:none;position:fixed;z-index:999;background:var(--bg2);
   border:1px solid var(--bdr2);border-radius:10px;padding:.3rem;min-width:180px;
   box-shadow:var(--sh3d);backdrop-filter:blur(12px)}
@@ -429,25 +398,16 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
 .ctx-item.danger{color:var(--no)}
 .ctx-item.danger i{color:var(--no)}
 .ctx-sep{height:1px;background:var(--bdr);margin:.2rem .5rem}
-
-/* ── Scope Dimming Overlay ─────── */
 .scope-dim{position:absolute;inset:0;pointer-events:none;z-index:3;opacity:0;transition:opacity .3s}
 .scope-dim.on{opacity:1}
-
-/* ── Color Picker Extended ─────── */
 .color-swatches{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.3rem}
-.color-sw{width:24px;height:24px;border-radius:6px;border:2px solid var(--bdr);cursor:pointer;
-  transition:all .12s}
+.color-sw{width:24px;height:24px;border-radius:6px;border:2px solid var(--bdr);cursor:pointer;transition:all .12s}
 .color-sw:hover{transform:scale(1.15);border-color:var(--tx2)}
 .color-sw.on{border-color:#fff;box-shadow:0 0 0 2px var(--c1)}
-
-/* ── Blend Mode Indicator ─────── */
 .blend-indicator{display:flex;align-items:center;gap:.35rem;padding:.3rem .55rem;
   border-radius:5px;font-size:.68rem;font-weight:600;background:rgba(34,211,238,.06);
   color:var(--cy);border:1px solid rgba(34,211,238,.12)}
 .blend-indicator i{font-size:.6rem}
-
-/* ── Animations ─────────────────── */
 @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
@@ -459,14 +419,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
 </style>
 </head>
 <body>
-
-<!-- ═══ HEADER (EXISTING — UNCHANGED) ════════════════════ -->
 <div class="hdr">
   <div class="hdr-ico"><i class="fas fa-wand-magic-sparkles"></i></div>
   <div><h1>OCR Image Text Editor Pro</h1><p>Upload → Detect → Resize & Edit every text → Download</p></div>
 </div>
-
-<!-- ═══ NEW: MODE SWITCHER BAR ═══════════════════════════ -->
 <div class="mode-bar" id="modeBar">
   <button class="mode-btn on" id="mdText" onclick="AppMode.set('text')"><i class="fas fa-font"></i> Text Mode</button>
   <button class="mode-btn" id="mdObj" onclick="AppMode.set('object')"><i class="fas fa-cube"></i> Object Mode</button>
@@ -478,8 +434,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
   <div class="spc"></div>
   <div class="blend-indicator" id="bgStatus"><i class="fas fa-shield-halved"></i> Background: Preserved</div>
 </div>
-
-<!-- ═══ UPLOAD (EXISTING — UNCHANGED) ════════════════════ -->
 <div class="up-sec" id="upSec">
   <div class="up-box" id="upBox">
     <div class="up-ico"><i class="fas fa-cloud-arrow-up"></i></div>
@@ -489,16 +443,13 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
     <input type="file" id="fi" accept="image/*">
   </div>
 </div>
-
-<!-- ═══ LOADING (EXISTING — UNCHANGED) ═══════════════════ -->
 <div class="ld" id="ld"><div class="sp"></div><p id="ldTxt">Detecting text…</p></div>
-
-<!-- ═══ EDITOR (EXISTING — UNCHANGED) ════════════════════ -->
 <div class="ed" id="ed">
   <div class="cv-pan">
     <div class="cv-tb">
       <button class="tb act" id="mSel" onclick="E.setMode('select')"><i class="fas fa-mouse-pointer"></i> Select</button>
       <button class="tb" id="mDrw" onclick="E.setMode('draw')"><i class="fas fa-vector-square"></i> Region</button>
+      <button class="tb" id="mPan" onclick="E.setMode('pan')"><i class="fas fa-hand"></i> Pan</button>
       <div class="sep"></div>
       <button class="tb" id="bBox" onclick="E.toggleBoxes()"><i class="fas fa-border-all"></i> Boxes</button>
       <button class="tb dn" onclick="E.resetAll()"><i class="fas fa-arrow-rotate-left"></i> Reset</button>
@@ -514,6 +465,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
         <span class="zl" id="zLvl">100%</span>
         <button class="zb" onclick="E.zoomFit()" title="Fit"><i class="fas fa-expand"></i></button>
         <button class="zb" onclick="E.setZoom(100)" title="100%"><i class="fas fa-compress"></i></button>
+        <button class="zb" onclick="E.panCenter()" title="Center Image"><i class="fas fa-crosshairs"></i></button>
       </div>
       <div class="spc"></div>
       <div class="st" id="stats"></div>
@@ -522,12 +474,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
     </div>
     <div class="cv-wrap" id="wrap">
       <canvas id="cv"></canvas>
-      <!-- NEW: Snap guides inside canvas wrapper -->
       <div class="snap-guide-h" id="snapH"></div>
       <div class="snap-guide-v" id="snapV"></div>
+      <div class="pan-hint" id="panHint">🖐 Drag to pan · Scroll to zoom · Space+drag anytime</div>
     </div>
   </div>
-
   <div class="sp-pan">
     <div class="sp-hd"><i class="fas fa-layer-group"></i> <span id="panelTitle">Text Regions</span></div>
     <div class="sp-tb" id="textTabs">
@@ -546,8 +497,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
       <i class="fas fa-mouse-pointer"></i>
       <p>Click a region on the image or list to edit.<br><small style="color:var(--c1l)">Use "Region" to draw custom areas.</small></p>
     </div>
-
-    <!-- ═══ NEW: OBJECT MODE PANEL ═════════════════════ -->
     <div class="obj-panel" id="objPanel">
       <div class="obj-toolbar">
         <button class="tb" onclick="ObjEditor.detectAll()"><i class="fas fa-crosshairs"></i> Detect Objects</button>
@@ -556,7 +505,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
       </div>
       <div class="obj-list" id="objList">
         <div class="nd"><i class="fas fa-cube" style="font-size:1.5rem;display:block;margin-bottom:.5rem;color:var(--bdr2)"></i>
-        Tap "Detect Objects" or click on the image to select objects</div>
+          Tap "Detect Objects" or click on the image to select objects</div>
       </div>
       <div class="obj-props" id="objProps">
         <div class="oi" id="objInfo" style="border-color:rgba(34,211,238,.15);color:var(--cy)"></div>
@@ -568,7 +517,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
           <button class="obj-act-btn" onclick="ObjEditor.editBg()"><i class="fas fa-image"></i> Edit BG</button>
           <button class="obj-act-btn danger" onclick="ObjEditor.remove()"><i class="fas fa-trash"></i> Remove</button>
         </div>
-        <!-- Object color controls -->
         <div class="sec">
           <div class="sec-h" onclick="togSec(this)"><i class="fas fa-palette"></i> Object Color <i class="fas fa-chevron-down sec-ch"></i></div>
           <div class="sec-b">
@@ -584,7 +532,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
             <div class="color-swatches" id="objSwatches"></div>
           </div>
         </div>
-        <!-- Object transform -->
         <div class="sec cl">
           <div class="sec-h" onclick="togSec(this)"><i class="fas fa-expand"></i> Transform <i class="fas fa-chevron-down sec-ch"></i></div>
           <div class="sec-b">
@@ -605,19 +552,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
         </div>
       </div>
     </div>
-
-    <!-- ═══ NEW: BACKGROUND EDITING PANEL ══════════════ -->
     <div class="bg-panel" id="bgPanel">
-      <div class="bg-preview" id="bgPreview">
-        <span class="bg-label">Background Preview</span>
-      </div>
+      <div class="bg-preview" id="bgPreview"><span class="bg-label">Background Preview</span></div>
       <div class="bg-mode-tabs">
         <button class="bg-tab on" onclick="BgEditor.setTab('preserve')"><i class="fas fa-shield-halved"></i> Preserve</button>
         <button class="bg-tab" onclick="BgEditor.setTab('blur')"><i class="fas fa-droplet"></i> Blur</button>
         <button class="bg-tab" onclick="BgEditor.setTab('color')"><i class="fas fa-fill-drip"></i> Color</button>
         <button class="bg-tab" onclick="BgEditor.setTab('replace')"><i class="fas fa-wand-magic-sparkles"></i> Replace</button>
       </div>
-      <!-- Preserve tab -->
       <div class="bg-content on" id="bgPreserve">
         <div style="text-align:center;padding:1rem;color:var(--tx2)">
           <i class="fas fa-shield-halved" style="font-size:2rem;color:var(--ok);display:block;margin-bottom:.6rem"></i>
@@ -628,7 +570,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
           <label class="tg"><input type="checkbox" id="bgLock" checked onchange="BgEditor.setLock(this.checked)"><span class="sl"></span></label>
         </div>
       </div>
-      <!-- Blur tab -->
       <div class="bg-content" id="bgBlur">
         <div class="fg"><label>Blur Radius</label>
           <div class="sr"><input type="range" id="bgBlurR" min="0" max="50" value="0" oninput="BgEditor.setBlur(+this.value)"><span id="bgBlurV" style="font-size:.7rem;color:var(--cy);min-width:28px;text-align:right">0px</span></div>
@@ -644,7 +585,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
           <label class="tg"><input type="checkbox" id="blPresFg" checked onchange="BgEditor.setPreserveFg(this.checked)"><span class="sl"></span></label>
         </div>
       </div>
-      <!-- Color tab -->
       <div class="bg-content" id="bgColor">
         <div class="fg"><label>Background Color</label>
           <div class="cw"><input type="color" id="bgColPick" value="#1a1a2e" oninput="BgEditor.setColor(this.value)"><span id="bgColH">#1a1a2e</span></div>
@@ -652,11 +592,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
         <div class="fg"><label>Color Opacity</label>
           <div class="sr"><input type="range" id="bgColOp" min="0" max="100" value="80" oninput="BgEditor.setColorOpacity(+this.value)"><span id="bgColOpV" style="font-size:.7rem;color:var(--cy);min-width:28px;text-align:right">80%</span></div>
         </div>
-        <div class="fg"><label>Presets</label>
-          <div class="color-swatches" id="bgSwatches"></div>
-        </div>
+        <div class="fg"><label>Presets</label><div class="color-swatches" id="bgSwatches"></div></div>
       </div>
-      <!-- Replace tab -->
       <div class="bg-content" id="bgReplace">
         <button class="tb" onclick="ImgSearch.openForBg()" style="width:100%;justify-content:center;padding:.6rem">
           <i class="fas fa-magnifying-glass"></i> Search Background Images
@@ -675,8 +612,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
         <button class="tb dn" onclick="BgEditor.reset()"><i class="fas fa-undo"></i> Reset</button>
       </div>
     </div>
-
-    <!-- ═══ NEW: ENHANCE PANEL ═════════════════════════ -->
     <div class="enhance-panel" id="enhPanel">
       <div class="enh-onetap" onclick="Enhance.oneTap()">
         <i class="fas fa-wand-magic-sparkles"></i>
@@ -695,8 +630,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
         <button class="tb dn" onclick="Enhance.reset()"><i class="fas fa-undo"></i> Reset</button>
       </div>
     </div>
-
-    <!-- EXISTING: Edit Panel (UNCHANGED) -->
     <div class="ep" id="ep">
       <div class="oi" id="oInfo"></div>
       <div class="sec" id="secFit">
@@ -803,8 +736,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
     </div>
   </div>
 </div>
-
-<!-- ═══ NEW: IMAGE SEARCH MODAL ══════════════════════════ -->
 <div class="search-modal" id="searchModal">
   <div class="search-header">
     <h2><i class="fas fa-magnifying-glass-plus"></i> Image Search</h2>
@@ -814,8 +745,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
   <div class="search-bar">
     <div class="search-input-wrap">
       <i class="fas fa-magnifying-glass"></i>
-      <input class="search-input" id="searchQ" type="text" placeholder="Search for objects, backgrounds, textures…"
-        onkeydown="if(event.key==='Enter')ImgSearch.search()">
+      <input class="search-input" id="searchQ" type="text" placeholder="Search for objects, backgrounds, textures…" onkeydown="if(event.key==='Enter')ImgSearch.search()">
     </div>
     <button class="search-go" onclick="ImgSearch.search()"><i class="fas fa-magnifying-glass"></i> Search</button>
   </div>
@@ -838,8 +768,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
     </div>
   </div>
 </div>
-
-<!-- ═══ NEW: HISTORY TIMELINE ════════════════════════════ -->
 <div class="history-panel" id="histPanel">
   <div class="history-header">
     <h3><i class="fas fa-clock-rotate-left"></i> Edit History (<span id="histCount">0</span>)</h3>
@@ -847,8 +775,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
   </div>
   <div class="history-track" id="histTrack"></div>
 </div>
-
-<!-- ═══ NEW: UNDO/REDO BAR ═══════════════════════════════ -->
 <div class="undo-bar" id="undoBar">
   <button class="undo-btn" id="undoBtn" onclick="History.undo()" disabled title="Undo (Ctrl+Z)"><i class="fas fa-rotate-left"></i></button>
   <button class="undo-btn" id="redoBtn" onclick="History.redo()" disabled title="Redo (Ctrl+Y)"><i class="fas fa-rotate-right"></i></button>
@@ -857,8 +783,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
   <div class="undo-sep"></div>
   <button class="undo-btn" onclick="History.togglePanel()" title="History"><i class="fas fa-clock-rotate-left"></i></button>
 </div>
-
-<!-- ═══ NEW: CONTEXT MENU ════════════════════════════════ -->
 <div class="ctx-menu" id="ctxMenu">
   <div class="ctx-item" onclick="CtxMenu.action('edit')"><i class="fas fa-pen"></i> Edit</div>
   <div class="ctx-item" onclick="CtxMenu.action('duplicate')"><i class="fas fa-clone"></i> Duplicate</div>
@@ -872,181 +796,251 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
   <div class="ctx-sep"></div>
   <div class="ctx-item danger" onclick="CtxMenu.action('delete')"><i class="fas fa-trash"></i> Delete</div>
 </div>
-
 <div class="toast" id="toast"></div>
 <div class="ft">Built with EasyOCR + Flask + Canvas · <span style="color:var(--c1)">♥</span> Pro Edition</div>
-
 <script>
-/*═══════════════════════════════════════════════
-  JAVASCRIPT — EXISTING (UNCHANGED)
-═══════════════════════════════════════════════*/
 const API = "https://coderkumar-ocr-text-editor-api.hf.space";
 const $=id=>document.getElementById(id);
-
 function toast(m,t='ok'){const e=$('toast');e.textContent=m;e.className=`toast ${t} show`;setTimeout(()=>e.classList.remove('show'),3200)}
 function showLd(on,m){if(m)$('ldTxt').textContent=m;$('ld').classList.toggle('on',on)}
 function showEd(on){$('upSec').style.display=on?'none':'flex';$('ed').classList.toggle('on',on);if(on)$('modeBar').classList.add('on')}
 function togSec(h){h.parentElement.classList.toggle('cl')}
 
 class Editor{
-  constructor(){
-    this.cv=$('cv');this.cx=this.cv.getContext('2d');this.wrap=$('wrap');
-    this.img=null;this.b64=null;
-    this.boxes=[];this.sel=-1;
-    this.scale=1;this.zoom=100;this.showB=true;this.mode='select';
-    this.ix={type:null,handle:null,sx:0,sy:0,ob:null};
-    this.drawing=false;this.ds=null;this.de=null;
-    this._mc=document.createElement('canvas');this._mx=this._mc.getContext('2d');
-    this._bind();
+constructor(){
+  this.cv=$('cv');this.cx=this.cv.getContext('2d');this.wrap=$('wrap');
+  this.img=null;this.b64=null;
+  this.boxes=[];this.sel=-1;
+  this.scale=1;this.zoom=100;this.showB=true;this.mode='select';
+  this.ix={type:null,handle:null,sx:0,sy:0,ob:null};
+  this.drawing=false;this.ds=null;this.de=null;
+  this._mc=document.createElement('canvas');this._mx=this._mc.getContext('2d');
+  // Pan state
+  this._panning=false;
+  this._panStart={x:0,y:0};
+  this._panScroll={x:0,y:0};
+  this._spaceDown=false;
+  this._preSpaceMode=null;
+  this._bind();
+}
+_bind(){
+  this.cv.addEventListener('mousedown',e=>this._md(e));
+  this.cv.addEventListener('mousemove',e=>this._mm(e));
+  this.cv.addEventListener('mouseup',e=>this._mu(e));
+  this.cv.addEventListener('mouseleave',e=>{if(this.ix.type||this.drawing||this._panning)this._mu(e)});
+  this.cv.addEventListener('dblclick',e=>{const p=this._ic(e);const i=this._hit(p.x,p.y);if(i>=0){this.select(i);setTimeout(()=>$('eTxt').focus(),50)}});
+  this.wrap.addEventListener('wheel',e=>{e.preventDefault();this.setZoom(this.zoom+(e.deltaY>0?-10:10))},{passive:false});
+  // Prevent middle-click auto-scroll
+  this.wrap.addEventListener('mousedown',e=>{if(e.button===1)e.preventDefault()});
+  $('fi').addEventListener('change',e=>{if(e.target.files[0])this.load(e.target.files[0])});
+  const ub=$('upBox');
+  ['dragenter','dragover'].forEach(v=>ub.addEventListener(v,e=>{e.preventDefault();ub.classList.add('dov')}));
+  ['dragleave','drop'].forEach(v=>ub.addEventListener(v,e=>{e.preventDefault();ub.classList.remove('dov')}));
+  ub.addEventListener('drop',e=>{if(e.dataTransfer.files[0])this.load(e.dataTransfer.files[0])});
+  document.body.addEventListener('dragover',e=>e.preventDefault());
+  document.body.addEventListener('drop',e=>{e.preventDefault();if(e.dataTransfer.files[0])this.load(e.dataTransfer.files[0])});
+  document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')return;
+    if(e.key==='ArrowDown'||e.key==='Tab'){e.preventDefault();this.selNext()}
+    if(e.key==='ArrowUp'){e.preventDefault();this.selPrev()}
+    if(e.key==='Escape')this.select(-1);
+    if(e.key==='='||e.key==='+')this.zoomIn();
+    if(e.key==='-')this.zoomOut();
+  });
+  // Space key for temporary pan mode
+  document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
+    if(e.code==='Space'&&!this._spaceDown&&this.mode!=='pan'){
+      this._spaceDown=true;
+      this._preSpaceMode=this.mode;
+      this.cv.classList.add('pan-cursor');
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('keyup',e=>{
+    if(e.code==='Space'&&this._spaceDown){
+      this._spaceDown=false;
+      this.cv.classList.remove('pan-cursor');
+      if(this._panning){
+        this._panning=false;
+        this.cv.classList.remove('panning');
+      }
+    }
+  });
+}
+_ic(e){
+  const r=this.cv.getBoundingClientRect();
+  const sx=this.cv.width/r.width,sy=this.cv.height/r.height;
+  return{x:(e.clientX-r.left)*sx/this.scale,y:(e.clientY-r.top)*sy/this.scale};
+}
+_hit(x,y){
+  for(let i=this.boxes.length-1;i>=0;i--){
+    const b=this.boxes[i];
+    if(x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h)return i;
+  }return-1;
+}
+_hitHandle(x,y){
+  if(this.sel<0)return null;
+  const b=this.boxes[this.sel];const hs=10/this.scale;
+  const handles=[
+    {id:'tl',x:b.x,y:b.y,cur:'nw-resize'},{id:'tr',x:b.x+b.w,y:b.y,cur:'ne-resize'},
+    {id:'bl',x:b.x,y:b.y+b.h,cur:'sw-resize'},{id:'br',x:b.x+b.w,y:b.y+b.h,cur:'se-resize'},
+    {id:'tm',x:b.x+b.w/2,y:b.y,cur:'n-resize'},{id:'bm',x:b.x+b.w/2,y:b.y+b.h,cur:'s-resize'},
+    {id:'ml',x:b.x,y:b.y+b.h/2,cur:'w-resize'},{id:'mr',x:b.x+b.w,y:b.y+b.h/2,cur:'e-resize'},
+  ];
+  for(const h of handles){if(Math.abs(x-h.x)<=hs&&Math.abs(y-h.y)<=hs)return h;}return null;
+}
+_md(e){
+  // Pan mode or space+drag panning
+  if(this.mode==='pan'||this._spaceDown){
+    this._panning=true;
+    this._panStart={x:e.clientX,y:e.clientY};
+    this._panScroll={x:this.wrap.scrollLeft,y:this.wrap.scrollTop};
+    this.cv.classList.add('panning');
+    e.preventDefault();
+    return;
   }
-  _bind(){
-    this.cv.addEventListener('mousedown',e=>this._md(e));
-    this.cv.addEventListener('mousemove',e=>this._mm(e));
-    this.cv.addEventListener('mouseup',e=>this._mu(e));
-    this.cv.addEventListener('mouseleave',e=>{if(this.ix.type||this.drawing)this._mu(e)});
-    this.cv.addEventListener('dblclick',e=>{const p=this._ic(e);const i=this._hit(p.x,p.y);if(i>=0){this.select(i);setTimeout(()=>$('eTxt').focus(),50)}});
-    this.wrap.addEventListener('wheel',e=>{e.preventDefault();this.setZoom(this.zoom+(e.deltaY>0?-10:10))},{passive:false});
-    $('fi').addEventListener('change',e=>{if(e.target.files[0])this.load(e.target.files[0])});
-    const ub=$('upBox');
-    ['dragenter','dragover'].forEach(v=>ub.addEventListener(v,e=>{e.preventDefault();ub.classList.add('dov')}));
-    ['dragleave','drop'].forEach(v=>ub.addEventListener(v,e=>{e.preventDefault();ub.classList.remove('dov')}));
-    ub.addEventListener('drop',e=>{if(e.dataTransfer.files[0])this.load(e.dataTransfer.files[0])});
-    document.body.addEventListener('dragover',e=>e.preventDefault());
-    document.body.addEventListener('drop',e=>{e.preventDefault();if(e.dataTransfer.files[0])this.load(e.dataTransfer.files[0])});
-    document.addEventListener('keydown',e=>{
-      if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')return;
-      if(e.key==='ArrowDown'||e.key==='Tab'){e.preventDefault();this.selNext()}
-      if(e.key==='ArrowUp'){e.preventDefault();this.selPrev()}
-      if(e.key==='Escape')this.select(-1);
-      if(e.key==='='||e.key==='+')this.zoomIn();
-      if(e.key==='-')this.zoomOut();
-    });
+  // Middle mouse button pan (button 1 = middle)
+  if(e.button===1){
+    this._panning=true;
+    this._panStart={x:e.clientX,y:e.clientY};
+    this._panScroll={x:this.wrap.scrollLeft,y:this.wrap.scrollTop};
+    this.cv.classList.add('panning');
+    e.preventDefault();
+    return;
   }
-  _ic(e){
-    const r=this.cv.getBoundingClientRect();
-    const sx=this.cv.width/r.width,sy=this.cv.height/r.height;
-    return{x:(e.clientX-r.left)*sx/this.scale,y:(e.clientY-r.top)*sy/this.scale};
+  const p=this._ic(e);
+  if(this.mode==='draw'){this.drawing=true;this.ds={...p};this.de={...p};return}
+  const h=this._hitHandle(p.x,p.y);
+  if(h){const b=this.boxes[this.sel];this.ix={type:'resize',handle:h.id,sx:p.x,sy:p.y,ob:{...b},ar:b.w/b.h};return}
+  const i=this._hit(p.x,p.y);
+  if(i>=0){this.select(i);const b=this.boxes[i];this.ix={type:'move',handle:null,sx:p.x,sy:p.y,ob:{...b}}}
+  else{this.select(-1)}
+}
+_mm(e){
+  // Panning viewport
+  if(this._panning){
+    const dx=e.clientX-this._panStart.x;
+    const dy=e.clientY-this._panStart.y;
+    this.wrap.scrollLeft=this._panScroll.x-dx;
+    this.wrap.scrollTop=this._panScroll.y-dy;
+    return;
   }
-  _hit(x,y){
-    for(let i=this.boxes.length-1;i>=0;i--){
-      const b=this.boxes[i];
-      if(x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h)return i;
-    }return-1;
+  const p=this._ic(e);
+  if(this.drawing&&this.ds){this.de={...p};this.render();return}
+  if(this.ix.type==='move'){const b=this.boxes[this.sel],o=this.ix.ob;b.x=o.x+(p.x-this.ix.sx);b.y=o.y+(p.y-this.ix.sy);this._clamp(b);b.modified=true;if(b.autoFit)this._fit(this.sel);this.render();this._syncUI();return}
+  if(this.ix.type==='resize'){this._resize(p);return}
+  if(this.mode==='select'){const h=this._hitHandle(p.x,p.y);if(h){this.cv.style.cursor=h.cur}else if(this._hit(p.x,p.y)>=0){this.cv.style.cursor='move'}else{this.cv.style.cursor='crosshair'}}
+}
+_mu(e){
+  // End panning
+  if(this._panning){
+    this._panning=false;
+    this.cv.classList.remove('panning');
+    if(this.mode==='pan') this.cv.classList.add('pan-cursor');
+    return;
   }
-  _hitHandle(x,y){
-    if(this.sel<0)return null;
-    const b=this.boxes[this.sel];const hs=10/this.scale;
-    const handles=[
-      {id:'tl',x:b.x,y:b.y,cur:'nw-resize'},{id:'tr',x:b.x+b.w,y:b.y,cur:'ne-resize'},
-      {id:'bl',x:b.x,y:b.y+b.h,cur:'sw-resize'},{id:'br',x:b.x+b.w,y:b.y+b.h,cur:'se-resize'},
-      {id:'tm',x:b.x+b.w/2,y:b.y,cur:'n-resize'},{id:'bm',x:b.x+b.w/2,y:b.y+b.h,cur:'s-resize'},
-      {id:'ml',x:b.x,y:b.y+b.h/2,cur:'w-resize'},{id:'mr',x:b.x+b.w,y:b.y+b.h/2,cur:'e-resize'},
-    ];
-    for(const h of handles){if(Math.abs(x-h.x)<=hs&&Math.abs(y-h.y)<=hs)return h;}return null;
+  if(this.drawing&&this.ds){this.drawing=false;const p=this._ic(e);this.de=p;const x1=Math.min(this.ds.x,this.de.x),y1=Math.min(this.ds.y,this.de.y);const x2=Math.max(this.ds.x,this.de.x),y2=Math.max(this.ds.y,this.de.y);if(x2-x1>10&&y2-y1>10)this._addCustom(x1,y1,x2-x1,y2-y1);this.ds=this.de=null;this.render();return}
+  if(this.ix.type){this.ix={type:null,handle:null,sx:0,sy:0,ob:null};this._listAll();this._updStats()}
+}
+_resize(p){
+  const b=this.boxes[this.sel],o=this.ix.ob,h=this.ix.handle;const dx=p.x-this.ix.sx,dy=p.y-this.ix.sy;const lock=b.lockAR;const ar=this.ix.ar;const mn=20;
+  let nx=o.x,ny=o.y,nw=o.w,nh=o.h;
+  switch(h){case 'br':nw=o.w+dx;nh=o.h+dy;break;case 'tl':nx=o.x+dx;ny=o.y+dy;nw=o.w-dx;nh=o.h-dy;break;case 'tr':ny=o.y+dy;nw=o.w+dx;nh=o.h-dy;break;case 'bl':nx=o.x+dx;nw=o.w-dx;nh=o.h+dy;break;case 'tm':ny=o.y+dy;nh=o.h-dy;break;case 'bm':nh=o.h+dy;break;case 'ml':nx=o.x+dx;nw=o.w-dx;break;case 'mr':nw=o.w+dx;break}
+  if(nw<mn)nw=mn;if(nh<mn)nh=mn;
+  if(lock&&['tl','tr','bl','br'].includes(h)){if(Math.abs(dx)>Math.abs(dy)){nh=nw/ar}else{nw=nh*ar}if(h==='tl'){nx=o.x+o.w-nw;ny=o.y+o.h-nh}if(h==='tr'){ny=o.y+o.h-nh}if(h==='bl'){nx=o.x+o.w-nw}}
+  b.x=nx;b.y=ny;b.w=nw;b.h=nh;b.modified=true;this._clamp(b);if(b.autoFit)this._fit(this.sel);this.render();this._syncUI();
+}
+_clamp(b){if(!this.img)return;const iw=this.img.naturalWidth,ih=this.img.naturalHeight;if(b.x<0)b.x=0;if(b.y<0)b.y=0;if(b.x+b.w>iw)b.x=iw-b.w;if(b.y+b.h>ih)b.y=ih-b.h;if(b.x<0){b.x=0;b.w=iw}if(b.y<0){b.y=0;b.h=ih}}
+setZoom(v){this.zoom=Math.max(10,Math.min(500,Math.round(v)));$('zSldr').value=this.zoom;$('zLvl').textContent=this.zoom+'%';this.scale=this.zoom/100;if(!this.img)return;this.cv.width=Math.floor(this.img.naturalWidth*this.scale);this.cv.height=Math.floor(this.img.naturalHeight*this.scale);this.render()}
+zoomIn(){this.setZoom(this.zoom+15)}
+zoomOut(){this.setZoom(this.zoom-15)}
+zoomFit(){if(!this.img)return;const ww=this.wrap.clientWidth-16,wh=this.wrap.clientHeight-16;this.setZoom(Math.round(Math.min(ww/this.img.naturalWidth,wh/this.img.naturalHeight)*100))}
+panCenter(){
+  if(!this.img)return;
+  const ww=this.wrap.clientWidth,wh=this.wrap.clientHeight;
+  const cw=this.cv.width,ch=this.cv.height;
+  this.wrap.scrollLeft=Math.max(0,(cw-ww)/2);
+  this.wrap.scrollTop=Math.max(0,(ch-wh)/2);
+}
+setMode(m){
+  this.mode=m;
+  $('mSel').classList.toggle('act',m==='select');
+  $('mDrw').classList.toggle('act',m==='draw');
+  $('mPan').classList.toggle('act',m==='pan');
+  const ind=$('mInd');
+  if(m==='select'){
+    ind.className='mi sel';ind.innerHTML='<i class="fas fa-mouse-pointer"></i> SELECT';
+    this.cv.style.cursor='crosshair';this.cv.classList.remove('pan-cursor');
+  }else if(m==='draw'){
+    ind.className='mi drw';ind.innerHTML='<i class="fas fa-vector-square"></i> DRAW';
+    this.cv.style.cursor='crosshair';this.cv.classList.remove('pan-cursor');
+  }else if(m==='pan'){
+    ind.className='mi sel';ind.innerHTML='<i class="fas fa-hand"></i> PAN';
+    this.cv.classList.add('pan-cursor');
   }
-  _md(e){
-    const p=this._ic(e);
-    if(this.mode==='draw'){this.drawing=true;this.ds={...p};this.de={...p};return}
-    const h=this._hitHandle(p.x,p.y);
-    if(h){const b=this.boxes[this.sel];this.ix={type:'resize',handle:h.id,sx:p.x,sy:p.y,ob:{...b},ar:b.w/b.h};return}
-    const i=this._hit(p.x,p.y);
-    if(i>=0){this.select(i);const b=this.boxes[i];this.ix={type:'move',handle:null,sx:p.x,sy:p.y,ob:{...b}}}
-    else{this.select(-1)}
-  }
-  _mm(e){
-    const p=this._ic(e);
-    if(this.drawing&&this.ds){this.de={...p};this.render();return}
-    if(this.ix.type==='move'){const b=this.boxes[this.sel],o=this.ix.ob;b.x=o.x+(p.x-this.ix.sx);b.y=o.y+(p.y-this.ix.sy);this._clamp(b);b.modified=true;if(b.autoFit)this._fit(this.sel);this.render();this._syncUI();return}
-    if(this.ix.type==='resize'){this._resize(p);return}
-    if(this.mode==='select'){const h=this._hitHandle(p.x,p.y);if(h){this.cv.style.cursor=h.cur}else if(this._hit(p.x,p.y)>=0){this.cv.style.cursor='move'}else{this.cv.style.cursor='crosshair'}}
-  }
-  _mu(e){
-    if(this.drawing&&this.ds){this.drawing=false;const p=this._ic(e);this.de=p;const x1=Math.min(this.ds.x,this.de.x),y1=Math.min(this.ds.y,this.de.y);const x2=Math.max(this.ds.x,this.de.x),y2=Math.max(this.ds.y,this.de.y);if(x2-x1>10&&y2-y1>10)this._addCustom(x1,y1,x2-x1,y2-y1);this.ds=this.de=null;this.render();return}
-    if(this.ix.type){this.ix={type:null,handle:null,sx:0,sy:0,ob:null};this._listAll();this._updStats()}
-  }
-  _resize(p){
-    const b=this.boxes[this.sel],o=this.ix.ob,h=this.ix.handle;const dx=p.x-this.ix.sx,dy=p.y-this.ix.sy;const lock=b.lockAR;const ar=this.ix.ar;const mn=20;
-    let nx=o.x,ny=o.y,nw=o.w,nh=o.h;
-    switch(h){case 'br':nw=o.w+dx;nh=o.h+dy;break;case 'tl':nx=o.x+dx;ny=o.y+dy;nw=o.w-dx;nh=o.h-dy;break;case 'tr':ny=o.y+dy;nw=o.w+dx;nh=o.h-dy;break;case 'bl':nx=o.x+dx;nw=o.w-dx;nh=o.h+dy;break;case 'tm':ny=o.y+dy;nh=o.h-dy;break;case 'bm':nh=o.h+dy;break;case 'ml':nx=o.x+dx;nw=o.w-dx;break;case 'mr':nw=o.w+dx;break}
-    if(nw<mn)nw=mn;if(nh<mn)nh=mn;
-    if(lock&&['tl','tr','bl','br'].includes(h)){if(Math.abs(dx)>Math.abs(dy)){nh=nw/ar}else{nw=nh*ar}if(h==='tl'){nx=o.x+o.w-nw;ny=o.y+o.h-nh}if(h==='tr'){ny=o.y+o.h-nh}if(h==='bl'){nx=o.x+o.w-nw}}
-    b.x=nx;b.y=ny;b.w=nw;b.h=nh;b.modified=true;this._clamp(b);if(b.autoFit)this._fit(this.sel);this.render();this._syncUI();
-  }
-  _clamp(b){if(!this.img)return;const iw=this.img.naturalWidth,ih=this.img.naturalHeight;if(b.x<0)b.x=0;if(b.y<0)b.y=0;if(b.x+b.w>iw)b.x=iw-b.w;if(b.y+b.h>ih)b.y=ih-b.h;if(b.x<0){b.x=0;b.w=iw}if(b.y<0){b.y=0;b.h=ih}}
-  setZoom(v){this.zoom=Math.max(10,Math.min(500,Math.round(v)));$('zSldr').value=this.zoom;$('zLvl').textContent=this.zoom+'%';this.scale=this.zoom/100;if(!this.img)return;this.cv.width=Math.floor(this.img.naturalWidth*this.scale);this.cv.height=Math.floor(this.img.naturalHeight*this.scale);this.render()}
-  zoomIn(){this.setZoom(this.zoom+15)}
-  zoomOut(){this.setZoom(this.zoom-15)}
-  zoomFit(){if(!this.img)return;const ww=this.wrap.clientWidth-16,wh=this.wrap.clientHeight-16;this.setZoom(Math.round(Math.min(ww/this.img.naturalWidth,wh/this.img.naturalHeight)*100))}
-  setMode(m){this.mode=m;$('mSel').classList.toggle('act',m==='select');$('mDrw').classList.toggle('act',m==='draw');const ind=$('mInd');if(m==='select'){ind.className='mi sel';ind.innerHTML='<i class="fas fa-mouse-pointer"></i> SELECT';this.cv.style.cursor='crosshair'}else{ind.className='mi drw';ind.innerHTML='<i class="fas fa-vector-square"></i> DRAW';this.cv.style.cursor='crosshair'}}
-  toggleBoxes(){this.showB=!this.showB;$('bBox').classList.toggle('act',this.showB);this.render()}
-  async load(file){
-    showLd(true,'Uploading & detecting text…');const fd=new FormData();fd.append('image',file);
-    try{const r=await fetch(`${API}/api/detect`,{method:'POST',body:fd});const d=await r.json();if(d.error){toast(d.error,'no');showLd(false);return}
+  const hint=$('panHint');
+  if(hint) hint.classList.toggle('on',m==='pan');
+}
+toggleBoxes(){this.showB=!this.showB;$('bBox').classList.toggle('act',this.showB);this.render()}
+async load(file){
+  showLd(true,'Uploading & detecting text…');const fd=new FormData();fd.append('image',file);
+  try{const r=await fetch(`${API}/api/detect`,{method:'POST',body:fd});const d=await r.json();if(d.error){toast(d.error,'no');showLd(false);return}
     this.b64=d.image;this.boxes=[];this.sel=-1;
     d.detections.forEach(det=>{const bb=det.bbox;const x=Math.min(...bb.map(p=>p[0])),y=Math.min(...bb.map(p=>p[1]));const w=Math.max(...bb.map(p=>p[0]))-x,h=Math.max(...bb.map(p=>p[1]))-y;this.boxes.push(this._mkBox(x,y,w,h,det.text,det.bgColor||'#ffffff',det.confidence,false,Math.max(14,Math.round(h*0.75))))});
     this.img=new Image();this.img.onload=()=>{this.setZoom(100);this.zoomFit();this._listAll();this._updStats();showLd(false);showEd(true);History.snapshot('Image loaded');toast(`Detected ${this.boxes.length} region(s)`)};
     this.img.src=`data:image/png;base64,${d.image}`}catch(e){toast('Backend error: '+e.message,'no');showLd(false)}
-  }
-  _mkBox(x,y,w,h,text,bg,conf,custom,fs){return{x,y,w,h,text,origText:text,fontFamily:'Arial',fontSize:fs||Math.max(14,Math.round(h*0.75)),bold:false,italic:false,underline:false,fontColor:'#000000',bgColor:bg,bgOpacity:1,alignment:'center',letterSpacing:0,lineHeight:130,borderWidth:0,borderColor:'#e63946',borderRadius:0,padTop:4,padBottom:4,padLeft:6,padRight:6,autoFit:true,minFS:8,maxFS:300,fitMode:'both',compFS:null,lockAR:false,modified:false,confidence:conf||1,isCustom:custom||false}}
-  _mTxt(ctx,t,ls){if(ls<=0)return ctx.measureText(t).width;let w=0;for(const c of t)w+=ctx.measureText(c).width+ls;return t.length>0?w-ls:0}
-  _wrap(ctx,text,maxW,ls){if(!text)return[''];const paras=text.split('\n');const out=[];for(const para of paras){if(!para){out.push('');continue}const words=para.split(/\s+/);let line='';for(const word of words){const test=line?line+' '+word:word;if(this._mTxt(ctx,test,ls)>maxW&&line){out.push(line);line=word;if(this._mTxt(ctx,word,ls)>maxW){let ch='';for(const c of word){if(this._mTxt(ctx,ch+c,ls)>maxW&&ch){out.push(ch);ch=c}else ch+=c}line=ch}}else line=test}out.push(line)}return out}
-  _fit(i){const b=this.boxes[i];if(!b||!b.autoFit)return;const aW=b.w-b.padLeft-b.padRight;const aH=b.h-b.padTop-b.padBottom;if(aW<=0||aH<=0){b.compFS=b.minFS;b.fontSize=b.minFS;return}const cx=this._mx;let lo=b.minFS,hi=b.maxFS,best=lo;while(lo<=hi){const mid=Math.floor((lo+hi)/2);cx.font=`${b.italic?'italic ':''}${b.bold?'bold ':''}${mid}px "${b.fontFamily}"`;const lines=this._wrap(cx,b.text||' ',aW,b.letterSpacing);const lh=mid*(b.lineHeight/100);const tH=lines.length*lh;let maxLW=0;for(const l of lines){const w=this._mTxt(cx,l,b.letterSpacing);if(w>maxLW)maxLW=w}let fits=true;if((b.fitMode==='width'||b.fitMode==='both')&&maxLW>aW)fits=false;if((b.fitMode==='height'||b.fitMode==='both')&&tH>aH)fits=false;if(b.fitMode==='shrink'&&(maxLW>aW||tH>aH))fits=false;if(fits){best=mid;lo=mid+1}else hi=mid-1}b.fontSize=best;b.compFS=best}
-  _overflow(i){const b=this.boxes[i];if(!b)return{ov:false};const aW=b.w-b.padLeft-b.padRight;const aH=b.h-b.padTop-b.padBottom;const cx=this._mx;const fs=b.fontSize;cx.font=`${b.italic?'italic ':''}${b.bold?'bold ':''}${fs}px "${b.fontFamily}"`;const lines=this._wrap(cx,b.text||' ',aW,b.letterSpacing);const lh=fs*(b.lineHeight/100);const tH=lines.length*lh;let maxLW=0;for(const l of lines){const w=this._mTxt(cx,l,b.letterSpacing);if(w>maxLW)maxLW=w}return{ov:maxLW>aW||tH>aH,tW:Math.round(maxLW),tH:Math.round(tH),aW:Math.round(aW),aH:Math.round(aH)}}
-  render(){const cx=this.cx,s=this.scale;if(!this.img)return;cx.clearRect(0,0,this.cv.width,this.cv.height);
-    /* NEW: Apply enhancement filter if active */
-    if(Enhance&&Enhance._active){cx.filter=Enhance._getFilter()}
-    cx.drawImage(this.img,0,0,this.cv.width,this.cv.height);cx.filter='none';
-    /* NEW: Apply background effects */
-    if(BgEditor&&BgEditor._blurVal>0&&BgEditor._applied){BgEditor._renderBlur(cx,s)}
-    for(let i=0;i<this.boxes.length;i++){const b=this.boxes[i];if(!b.modified)continue;const bx=b.x*s,by=b.y*s,bw=b.w*s,bh=b.h*s;const br=Math.min(b.borderRadius*s,bw/2,bh/2);cx.save();cx.globalAlpha=b.bgOpacity;cx.fillStyle=b.bgColor;if(br>0){this._rr(cx,bx,by,bw,bh,br);cx.fill()}else cx.fillRect(bx,by,bw,bh);cx.restore();if(b.borderWidth>0){cx.strokeStyle=b.borderColor;cx.lineWidth=b.borderWidth*s;if(br>0){this._rr(cx,bx,by,bw,bh,br);cx.stroke()}else cx.strokeRect(bx,by,bw,bh)}const pl=b.padLeft*s,pr=b.padRight*s,pt=b.padTop*s,pb=b.padBottom*s;const tx=bx+pl,tw=bw-pl-pr,ty=by+pt,th=bh-pt-pb;if(tw<=0||th<=0)continue;const fs=b.fontSize*s;cx.save();cx.beginPath();if(br>0)this._rr(cx,bx,by,bw,bh,br);else cx.rect(bx,by,bw,bh);cx.clip();cx.font=`${b.italic?'italic ':''}${b.bold?'bold ':''}${fs}px "${b.fontFamily}"`;cx.fillStyle=b.fontColor;cx.textBaseline='top';const lines=this._wrap(cx,b.text||'',tw,b.letterSpacing*s);const lh=fs*(b.lineHeight/100);const totalH=lines.length*lh;let startY=ty+(th-totalH)/2;if(startY<ty)startY=ty;for(let li=0;li<lines.length;li++){const cy=startY+li*lh;if(cy+lh<by||cy>by+bh)continue;const line=lines[li];const lw=this._mTxt(cx,line,b.letterSpacing*s);let lx;if(b.alignment==='left')lx=tx;else if(b.alignment==='right')lx=tx+tw-lw;else if(b.alignment==='justify'&&li<lines.length-1&&lines.length>1){this._justifyLine(cx,line,tx,cy+fs*0.12,tw,b.letterSpacing*s,fs);continue}else lx=tx+(tw-lw)/2;if(b.letterSpacing>0){let px=lx;cx.textAlign='left';for(const c of line){cx.fillText(c,px,cy+fs*0.12);px+=cx.measureText(c).width+b.letterSpacing*s}}else{cx.textAlign='left';cx.fillText(line,lx,cy+fs*0.12)}if(b.underline){cx.strokeStyle=b.fontColor;cx.lineWidth=Math.max(1,fs*0.06);cx.beginPath();cx.moveTo(lx,cy+fs*0.95);cx.lineTo(lx+lw,cy+fs*0.95);cx.stroke()}}cx.restore()}
-    /* NEW: Render detected objects */
-    if(ObjEditor&&ObjEditor._objects.length&&AppMode._cur==='object'){ObjEditor._renderObjects(cx,s)}
-    if(this.showB){for(let i=0;i<this.boxes.length;i++){const b=this.boxes[i];const isSel=i===this.sel;const bx=b.x*s,by=b.y*s,bw=b.w*s,bh=b.h*s;cx.strokeStyle=isSel?'#e63946':b.modified?'rgba(249,202,36,.55)':b.isCustom?'rgba(34,211,238,.45)':'rgba(46,204,113,.35)';cx.lineWidth=isSel?2.5:1;cx.setLineDash(isSel?[6,4]:b.isCustom?[4,4]:[]);cx.strokeRect(bx,by,bw,bh);cx.setLineDash([]);const label=b.isCustom?`C${i+1}`:`#${i+1}`;cx.font=`bold ${Math.max(9,10*s)}px Inter,sans-serif`;const tlw=cx.measureText(label).width;cx.fillStyle=isSel?'rgba(230,57,70,.85)':b.isCustom?'rgba(34,211,238,.75)':'rgba(46,204,113,.6)';const lbh=Math.max(14,15*s);cx.fillRect(bx,by-lbh-1,tlw+8*s,lbh);cx.fillStyle='#fff';cx.textBaseline='middle';cx.textAlign='left';cx.fillText(label,bx+4*s,by-lbh/2-1)}}
-    if(this.sel>=0)this._drawHandles(this.boxes[this.sel]);
-    if(this.drawing&&this.ds&&this.de){const x1=this.ds.x*s,y1=this.ds.y*s,x2=this.de.x*s,y2=this.de.y*s;cx.strokeStyle='#22d3ee';cx.lineWidth=2;cx.setLineDash([6,4]);cx.strokeRect(Math.min(x1,x2),Math.min(y1,y2),Math.abs(x2-x1),Math.abs(y2-y1));cx.fillStyle='rgba(34,211,238,.06)';cx.fillRect(Math.min(x1,x2),Math.min(y1,y2),Math.abs(x2-x1),Math.abs(y2-y1));cx.setLineDash([])}}
-  _rr(cx,x,y,w,h,r){r=Math.min(r,w/2,h/2);cx.beginPath();cx.moveTo(x+r,y);cx.lineTo(x+w-r,y);cx.arcTo(x+w,y,x+w,y+r,r);cx.lineTo(x+w,y+h-r);cx.arcTo(x+w,y+h,x+w-r,y+h,r);cx.lineTo(x+r,y+h);cx.arcTo(x,y+h,x,y+h-r,r);cx.lineTo(x,y+r);cx.arcTo(x,y,x+r,y,r);cx.closePath()}
-  _justifyLine(cx,text,x,y,maxW,ls,fs){const words=text.split(/\s+/).filter(w=>w);if(words.length<=1){cx.textAlign='left';cx.fillText(text,x,y);return}let totalW=0;for(const w of words)totalW+=this._mTxt(cx,w,ls);const gap=(maxW-totalW)/(words.length-1);let px=x;cx.textAlign='left';for(const w of words){if(ls>0){for(const c of w){cx.fillText(c,px,y);px+=cx.measureText(c).width+ls}px-=ls}else{cx.fillText(w,px,y);px+=cx.measureText(w).width}px+=gap}}
-  _drawHandles(b){const cx=this.cx,s=this.scale;const bx=b.x*s,by=b.y*s,bw=b.w*s,bh=b.h*s;const hs=10;const handles=[{x:bx,y:by},{x:bx+bw,y:by},{x:bx,y:by+bh},{x:bx+bw,y:by+bh},{x:bx+bw/2,y:by},{x:bx+bw/2,y:by+bh},{x:bx,y:by+bh/2},{x:bx+bw,y:by+bh/2}];for(const h of handles){cx.fillStyle='rgba(0,0,0,.4)';cx.fillRect(h.x-hs/2+1,h.y-hs/2+1,hs,hs);cx.fillStyle='#fff';cx.fillRect(h.x-hs/2,h.y-hs/2,hs,hs);cx.strokeStyle='#e63946';cx.lineWidth=2;cx.strokeRect(h.x-hs/2,h.y-hs/2,hs,hs)}if(b.autoFit){const pl=b.padLeft*s,pr=b.padRight*s,pt=b.padTop*s,pb=b.padBottom*s;cx.strokeStyle='rgba(255,255,255,.12)';cx.lineWidth=1;cx.setLineDash([3,3]);cx.strokeRect(bx+pl,by+pt,bw-pl-pr,bh-pt-pb);cx.setLineDash([])}}
-  _addCustom(x,y,w,h){const bg=this._sampleBg(x,y,w,h);this.boxes.push(this._mkBox(x,y,w,h,'',bg,1,true,Math.max(14,Math.round(h*0.6))));const idx=this.boxes.length-1;this.boxes[idx].modified=true;this._listAll();this._updStats();this.select(idx);this.setMode('select');History.snapshot('Region added');toast('Region added — type text','info')}
-  _sampleBg(x,y,w,h){try{const s=this.scale;const px=[];for(let i=0;i<10;i++){const sx=Math.floor((x+w*i/10)*s);const d=this.cx.getImageData(sx,Math.floor(y*s),1,1).data;px.push([d[0],d[1],d[2]]);const d2=this.cx.getImageData(sx,Math.floor((y+h)*s),1,1).data;px.push([d2[0],d2[1],d2[2]])}const avg=px.reduce((a,p)=>[a[0]+p[0],a[1]+p[1],a[2]+p[2]],[0,0,0]);const n=px.length;return'#'+[avg[0]/n,avg[1]/n,avg[2]/n].map(v=>Math.round(v).toString(16).padStart(2,'0')).join('')}catch{return'#ffffff'}}
-  select(i){this.sel=i;this.render();this._syncUI();this._highlightList();if(i>=0){const el=document.querySelector(`.di[data-i="${i}"]`);if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'})}}
-  selNext(){const n=this.boxes.length;if(!n)return;this.select((this.sel+1)%n)}
-  selPrev(){const n=this.boxes.length;if(!n)return;this.select(this.sel<=0?n-1:this.sel-1)}
-  _syncUI(){const ep=$('ep'),prm=$('prm');if(this.sel<0){ep.classList.remove('on');prm.style.display='block';return}ep.classList.add('on');prm.style.display='none';const b=this.boxes[this.sel];$('oInfo').innerHTML=b.isCustom?'<i class="fas fa-draw-polygon"></i> Custom region':`<i class="fas fa-info-circle"></i> Original: "<b>${this._esc(b.origText)}</b>" · ${Math.round(b.confidence*100)}%`;$('eTxt').value=b.text;$('eFont').value=b.fontFamily;$('eSzR').value=b.fontSize;$('eSzN').value=b.fontSize;$('eSzR').disabled=b.autoFit;$('eSzN').disabled=b.autoFit;$('szLock').style.display=b.autoFit?'inline':'none';$('sB').classList.toggle('on',b.bold);$('sI').classList.toggle('on',b.italic);$('sU').classList.toggle('on',b.underline);['L','C','R','J'].forEach(a=>{const id='a'+a;$(id).classList.toggle('on',b.alignment==={L:'left',C:'center',R:'right',J:'justify'}[a])});$('eFc').value=b.fontColor;$('eFcH').textContent=b.fontColor;$('eBg').value=b.bgColor;$('eBgH').textContent=b.bgColor;$('eOp').value=Math.round(b.bgOpacity*100);$('eOpN').value=Math.round(b.bgOpacity*100);$('eBw').value=b.borderWidth;$('eBwN').value=b.borderWidth;$('eBc').value=b.borderColor;$('eBcH').textContent=b.borderColor;$('eBr').value=b.borderRadius;$('eBrN').value=b.borderRadius;$('eLock').checked=b.lockAR;$('eLs').value=b.letterSpacing;$('eLsN').value=b.letterSpacing;$('eLh').value=b.lineHeight;$('eLhN').value=b.lineHeight;$('afTog').checked=b.autoFit;$('afOpts').style.display=b.autoFit?'flex':'none';['both','width','height','shrink'].forEach(m=>$('fm-'+m).classList.toggle('on',b.fitMode===m));$('pT').value=b.padTop;$('pB').value=b.padBottom;$('pL').value=b.padLeft;$('pR').value=b.padRight;$('afMax').value=b.maxFS;$('afMaxN').value=b.maxFS;$('afMin').value=b.minFS;$('afMinN').value=b.minFS;$('afComp').textContent=b.compFS!==null?b.compFS:'--';this._updOv()}
-  _updOv(){if(this.sel<0)return;const o=this._overflow(this.sel);const el=$('ovInd');if(o.ov){el.className='ov bad';el.innerHTML=`<i class="fas fa-exclamation-triangle"></i> Overflow ${o.tW}×${o.tH} > ${o.aW}×${o.aH}`}else{el.className='ov gd';el.innerHTML=`<i class="fas fa-check-circle"></i> Fits ${o.tW}×${o.tH} in ${o.aW}×${o.aH}`}}
-  _esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
-  ch(prop,val){if(this.sel<0)return;const b=this.boxes[this.sel];switch(prop){case'text':b.text=val;break;case'fontFamily':b.fontFamily=val;break;case'fontSize':if(!b.autoFit){b.fontSize=+val}break;case'fontColor':b.fontColor=val;break;case'bgColor':b.bgColor=val;break;case'bgOpacity':b.bgOpacity=+val;break;case'borderWidth':b.borderWidth=+val;break;case'borderColor':b.borderColor=val;break;case'borderRadius':b.borderRadius=+val;break;case'letterSpacing':b.letterSpacing=+val;break;case'lineHeight':b.lineHeight=+val;break;case'lockAR':b.lockAR=val;if(val)b.aspectRatio=b.w/b.h;break}b.modified=true;if(b.autoFit&&['text','fontFamily','letterSpacing','lineHeight'].includes(prop)){this._fit(this.sel);$('eSzR').value=b.fontSize;$('eSzN').value=b.fontSize;$('afComp').textContent=b.compFS}this._updOv();this.render();this._updMod();this._updStats()}
-  tog(prop){if(this.sel<0)return;const b=this.boxes[this.sel];b[prop]=!b[prop];b.modified=true;$({bold:'sB',italic:'sI',underline:'sU'}[prop]).classList.toggle('on');if(b.autoFit){this._fit(this.sel);$('eSzR').value=b.fontSize;$('eSzN').value=b.fontSize;$('afComp').textContent=b.compFS}this._updOv();this.render()}
-  align(a){if(this.sel<0)return;this.boxes[this.sel].alignment=a;this.boxes[this.sel].modified=true;['L','C','R','J'].forEach(k=>{const id='a'+k;$(id).classList.toggle('on',a==={L:'left',C:'center',R:'right',J:'justify'}[k])});this.render()}
-  setAutoFit(on){if(this.sel<0)return;const b=this.boxes[this.sel];b.autoFit=on;$('afOpts').style.display=on?'flex':'none';$('eSzR').disabled=on;$('eSzN').disabled=on;$('szLock').style.display=on?'inline':'none';if(on){this._fit(this.sel);$('eSzR').value=b.fontSize;$('eSzN').value=b.fontSize;$('afComp').textContent=b.compFS}b.modified=true;this._updOv();this.render();this._listAll()}
-  fitMode(m){if(this.sel<0)return;this.boxes[this.sel].fitMode=m;['both','width','height','shrink'].forEach(v=>$('fm-'+v).classList.toggle('on',v===m));if(this.boxes[this.sel].autoFit){this._fit(this.sel);$('eSzR').value=this.boxes[this.sel].fontSize;$('eSzN').value=this.boxes[this.sel].fontSize;$('afComp').textContent=this.boxes[this.sel].compFS}this._updOv();this.render()}
-  pad(){if(this.sel<0)return;const b=this.boxes[this.sel];b.padTop=+$('pT').value||0;b.padBottom=+$('pB').value||0;b.padLeft=+$('pL').value||0;b.padRight=+$('pR').value||0;if(b.autoFit){this._fit(this.sel);$('eSzR').value=b.fontSize;$('eSzN').value=b.fontSize;$('afComp').textContent=b.compFS}b.modified=true;this._updOv();this.render()}
-  refit(){if(this.sel<0)return;const b=this.boxes[this.sel];b.maxFS=+$('afMaxN').value||300;b.minFS=+$('afMinN').value||8;if(b.autoFit){this._fit(this.sel);$('eSzR').value=b.fontSize;$('eSzN').value=b.fontSize;$('afComp').textContent=b.compFS}this._updOv();this.render()}
-  editAll(){this.boxes.forEach((b,i)=>{b.modified=true});this.render();this._listAll();this._updStats();if(this.boxes.length)this.select(0);History.snapshot('Edit all');toast(`All ${this.boxes.length} marked`,'info')}
-  fitAll(){this.boxes.forEach((b,i)=>{b.autoFit=true;b.modified=true;this._fit(i)});this.render();this._listAll();this._updStats();if(this.sel>=0)this._syncUI();History.snapshot('Fit all');toast('Auto-fit applied to all','info')}
-  applyNext(){if(this.sel<0)return;this.boxes[this.sel].modified=true;this._listAll();this._updStats();this.selNext();History.snapshot('Apply edit');toast('Applied','ok')}
-  resetCur(){if(this.sel<0)return;const b=this.boxes[this.sel];const nb=this._mkBox(b.x,b.y,b.w,b.h,b.origText,b.bgColor,b.confidence,b.isCustom,b.fontSize);Object.assign(b,nb);this.render();this._syncUI();this._listAll();History.snapshot('Reset region');toast('Reset','info')}
-  resetAll(){this.boxes.forEach(b=>{const nb=this._mkBox(b.x,b.y,b.w,b.h,b.origText,b.bgColor,b.confidence,b.isCustom);Object.assign(b,nb)});this.sel=-1;this.render();this._syncUI();this._listAll();this._updStats();History.snapshot('Reset all');toast('All reset','info')}
-  deleteBox(i){this.boxes.splice(i,1);if(this.sel===i)this.sel=-1;else if(this.sel>i)this.sel--;this.render();this._syncUI();this._listAll();this._updStats();History.snapshot('Delete region');toast('Deleted','info')}
-  _listAll(){const el=$('dList');$('cAll').textContent=this.boxes.length;if(!this.boxes.length){el.innerHTML='<div class="nd">No text detected</div>';return}el.innerHTML='';this.boxes.forEach((b,i)=>{const d=document.createElement('div');d.className=`di${b.modified?' mod':''}${i===this.sel?' sel':''}`;d.dataset.i=i;const af=b.autoFit?'<span style="font-size:.55rem;background:var(--wa);color:#000;padding:1px 3px;border-radius:3px;margin-left:2px">FIT</span>':'';d.innerHTML=`<span class="dx" style="${b.isCustom?'background:linear-gradient(135deg,#22d3ee,#0abde3)':''}">${i+1}</span><span class="dt">${this._esc(b.text||b.origText||'(empty)')}${af}</span><span class="dc" style="${b.isCustom?'color:var(--cy)':''}">${b.isCustom?'Custom':Math.round(b.confidence*100)+'%'}</span><div class="da"><button class="db" onclick="event.stopPropagation();E.select(${i})"><i class="fas fa-pen"></i></button>${b.isCustom?`<button class="db" onclick="event.stopPropagation();E.deleteBox(${i})"><i class="fas fa-trash"></i></button>`:''}</div>`;d.onclick=()=>this.select(i);el.appendChild(d)});this._updMod()}
-  _updMod(){const el=$('mList');const mod=this.boxes.filter(b=>b.modified);$('cMod').textContent=mod.length;if(!mod.length){el.innerHTML='<div class="nd">No edits yet</div>';return}el.innerHTML='';mod.forEach(b=>{const i=this.boxes.indexOf(b);const d=document.createElement('div');d.className='di';d.dataset.i=i;d.innerHTML=`<span class="dx" style="background:var(--wa)">${i+1}</span><span class="dt">${this._esc(b.text||'(empty)')}</span><span class="dc" style="color:var(--wa)">Edited</span>`;d.onclick=()=>this.select(i);el.appendChild(d)})}
-  _highlightList(){document.querySelectorAll('.di').forEach(d=>{d.classList.toggle('sel',+d.dataset.i===this.sel)})}
-  _updStats(){const t=this.boxes.length,m=this.boxes.filter(b=>b.modified).length,f=this.boxes.filter(b=>b.autoFit).length,c=this.boxes.filter(b=>b.isCustom).length;$('stats').innerHTML=`<div class="sc"><i class="fas fa-font"></i> <b>${t}</b></div><div class="sc"><i class="fas fa-pen"></i> <b>${m}</b></div><div class="sc"><i class="fas fa-text-width"></i> <b>${f}</b></div>${c?`<div class="sc"><i class="fas fa-vector-square"></i> <b>${c}</b></div>`:''}`}
-  tab(t){document.querySelectorAll('.sp-t').forEach((e,i)=>e.classList.toggle('on',i===(t==='all'?0:1)));$('tAll').classList.toggle('on',t==='all');$('tMod').classList.toggle('on',t==='mod');if(t==='mod')this._updMod()}
-  download(){const c=document.createElement('canvas');c.width=this.img.naturalWidth;c.height=this.img.naturalHeight;const cx=c.getContext('2d');cx.drawImage(this.img,0,0);const origScale=this.scale;this.scale=1;const origCx=this.cx;this.cx=cx;for(let i=0;i<this.boxes.length;i++){const b=this.boxes[i];if(!b.modified)continue;this._renderBox(cx,b,1)}this.cx=origCx;this.scale=origScale;const a=document.createElement('a');a.download='edited.png';a.href=c.toDataURL('image/png');a.click();toast('Downloaded!')}
-  _renderBox(cx,b,s){const bx=b.x*s,by=b.y*s,bw=b.w*s,bh=b.h*s;const br=Math.min(b.borderRadius*s,bw/2,bh/2);cx.save();cx.globalAlpha=b.bgOpacity;cx.fillStyle=b.bgColor;if(br>0){this._rr(cx,bx,by,bw,bh,br);cx.fill()}else cx.fillRect(bx,by,bw,bh);cx.restore();if(b.borderWidth>0){cx.strokeStyle=b.borderColor;cx.lineWidth=b.borderWidth*s;if(br>0){this._rr(cx,bx,by,bw,bh,br);cx.stroke()}else cx.strokeRect(bx,by,bw,bh)}const pl=b.padLeft*s,pr=b.padRight*s,pt=b.padTop*s,pb=b.padBottom*s;const tx=bx+pl,tw=bw-pl-pr,ty=by+pt,th=bh-pt-pb;if(tw<=0||th<=0)return;const fs=b.fontSize*s;cx.save();cx.beginPath();if(br>0)this._rr(cx,bx,by,bw,bh,br);else cx.rect(bx,by,bw,bh);cx.clip();cx.font=`${b.italic?'italic ':''}${b.bold?'bold ':''}${fs}px "${b.fontFamily}"`;cx.fillStyle=b.fontColor;cx.textBaseline='top';const lines=this._wrap(cx,b.text||'',tw,b.letterSpacing*s);const lh=fs*(b.lineHeight/100);const totalH=lines.length*lh;let startY=ty+(th-totalH)/2;if(startY<ty)startY=ty;for(let li=0;li<lines.length;li++){const cy=startY+li*lh;const line=lines[li];const lw=this._mTxt(cx,line,b.letterSpacing*s);let lx;if(b.alignment==='left')lx=tx;else if(b.alignment==='right')lx=tx+tw-lw;else if(b.alignment==='justify'&&li<lines.length-1){this._justifyLine(cx,line,tx,cy+fs*0.12,tw,b.letterSpacing*s,fs);continue}else lx=tx+(tw-lw)/2;if(b.letterSpacing>0){let px=lx;cx.textAlign='left';for(const c of line){cx.fillText(c,px,cy+fs*0.12);px+=cx.measureText(c).width+b.letterSpacing*s}}else{cx.textAlign='left';cx.fillText(line,lx,cy+fs*0.12)}if(b.underline){cx.strokeStyle=b.fontColor;cx.lineWidth=Math.max(1,fs*0.06);cx.beginPath();cx.moveTo(lx,cy+fs*0.95);cx.lineTo(lx+lw,cy+fs*0.95);cx.stroke()}}cx.restore()}
-  async downloadHD(){const mods=this.boxes.filter(b=>b.modified).map(b=>({bbox:[[b.x,b.y],[b.x+b.w,b.y],[b.x+b.w,b.y+b.h],[b.x,b.y+b.h]],newText:b.text,fontSize:b.fontSize,fontColor:b.fontColor,bgColor:b.bgColor,bold:b.bold,alignment:b.alignment}));if(!mods.length){toast('No edits','no');return}showLd(true,'Rendering HD…');try{const r=await fetch(`${API}/api/edit`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:this.b64,edits:mods})});const d=await r.json();if(d.error){toast(d.error,'no');showLd(false);return}const a=document.createElement('a');a.download='edited_hd.png';a.href=`data:image/png;base64,${d.image}`;a.click();showLd(false);toast('HD downloaded!')}catch(e){toast('Server error','no');showLd(false)}}
 }
-
+_mkBox(x,y,w,h,text,bg,conf,custom,fs){return{x,y,w,h,text,origText:text,fontFamily:'Arial',fontSize:fs||Math.max(14,Math.round(h*0.75)),bold:false,italic:false,underline:false,fontColor:'#000000',bgColor:bg,bgOpacity:1,alignment:'center',letterSpacing:0,lineHeight:130,borderWidth:0,borderColor:'#e63946',borderRadius:0,padTop:4,padBottom:4,padLeft:6,padRight:6,autoFit:true,minFS:8,maxFS:300,fitMode:'both',compFS:null,lockAR:false,modified:false,confidence:conf||1,isCustom:custom||false}}
+_mTxt(ctx,t,ls){if(ls<=0)return ctx.measureText(t).width;let w=0;for(const c of t)w+=ctx.measureText(c).width+ls;return t.length>0?w-ls:0}
+_wrap(ctx,text,maxW,ls){if(!text)return[''];const paras=text.split('\n');const out=[];for(const para of paras){if(!para){out.push('');continue}const words=para.split(/\s+/);let line='';for(const word of words){const test=line?line+' '+word:word;if(this._mTxt(ctx,test,ls)>maxW&&line){out.push(line);line=word;if(this._mTxt(ctx,word,ls)>maxW){let ch='';for(const c of word){if(this._mTxt(ctx,ch+c,ls)>maxW&&ch){out.push(ch);ch=c}else ch+=c}line=ch}}else line=test}out.push(line)}return out}
+_fit(i){const b=this.boxes[i];if(!b||!b.autoFit)return;const aW=b.w-b.padLeft-b.padRight;const aH=b.h-b.padTop-b.padBottom;if(aW<=0||aH<=0){b.compFS=b.minFS;b.fontSize=b.minFS;return}const cx=this._mx;let lo=b.minFS,hi=b.maxFS,best=lo;while(lo<=hi){const mid=Math.floor((lo+hi)/2);cx.font=`${b.italic?'italic ':''}${b.bold?'bold ':''}${mid}px "${b.fontFamily}"`;const lines=this._wrap(cx,b.text||' ',aW,b.letterSpacing);const lh=mid*(b.lineHeight/100);const tH=lines.length*lh;let maxLW=0;for(const l of lines){const w=this._mTxt(cx,l,b.letterSpacing);if(w>maxLW)maxLW=w}let fits=true;if((b.fitMode==='width'||b.fitMode==='both')&&maxLW>aW)fits=false;if((b.fitMode==='height'||b.fitMode==='both')&&tH>aH)fits=false;if(b.fitMode==='shrink'&&(maxLW>aW||tH>aH))fits=false;if(fits){best=mid;lo=mid+1}else hi=mid-1}b.fontSize=best;b.compFS=best}
+_overflow(i){const b=this.boxes[i];if(!b)return{ov:false};const aW=b.w-b.padLeft-b.padRight;const aH=b.h-b.padTop-b.padBottom;const cx=this._mx;const fs=b.fontSize;cx.font=`${b.italic?'italic ':''}${b.bold?'bold ':''}${fs}px "${b.fontFamily}"`;const lines=this._wrap(cx,b.text||' ',aW,b.letterSpacing);const lh=fs*(b.lineHeight/100);const tH=lines.length*lh;let maxLW=0;for(const l of lines){const w=this._mTxt(cx,l,b.letterSpacing);if(w>maxLW)maxLW=w}return{ov:maxLW>aW||tH>aH,tW:Math.round(maxLW),tH:Math.round(tH),aW:Math.round(aW),aH:Math.round(aH)}}
+render(){const cx=this.cx,s=this.scale;if(!this.img)return;cx.clearRect(0,0,this.cv.width,this.cv.height);
+  if(Enhance&&Enhance._active){cx.filter=Enhance._getFilter()}
+  cx.drawImage(this.img,0,0,this.cv.width,this.cv.height);cx.filter='none';
+  if(BgEditor&&BgEditor._blurVal>0&&BgEditor._applied){BgEditor._renderBlur(cx,s)}
+  for(let i=0;i<this.boxes.length;i++){const b=this.boxes[i];if(!b.modified)continue;const bx=b.x*s,by=b.y*s,bw=b.w*s,bh=b.h*s;const br=Math.min(b.borderRadius*s,bw/2,bh/2);cx.save();cx.globalAlpha=b.bgOpacity;cx.fillStyle=b.bgColor;if(br>0){this._rr(cx,bx,by,bw,bh,br);cx.fill()}else cx.fillRect(bx,by,bw,bh);cx.restore();if(b.borderWidth>0){cx.strokeStyle=b.borderColor;cx.lineWidth=b.borderWidth*s;if(br>0){this._rr(cx,bx,by,bw,bh,br);cx.stroke()}else cx.strokeRect(bx,by,bw,bh)}const pl=b.padLeft*s,pr=b.padRight*s,pt=b.padTop*s,pb=b.padBottom*s;const tx=bx+pl,tw=bw-pl-pr,ty=by+pt,th=bh-pt-pb;if(tw<=0||th<=0)continue;const fs=b.fontSize*s;cx.save();cx.beginPath();if(br>0)this._rr(cx,bx,by,bw,bh,br);else cx.rect(bx,by,bw,bh);cx.clip();cx.font=`${b.italic?'italic ':''}${b.bold?'bold ':''}${fs}px "${b.fontFamily}"`;cx.fillStyle=b.fontColor;cx.textBaseline='top';const lines=this._wrap(cx,b.text||'',tw,b.letterSpacing*s);const lh=fs*(b.lineHeight/100);const totalH=lines.length*lh;let startY=ty+(th-totalH)/2;if(startY<ty)startY=ty;for(let li=0;li<lines.length;li++){const cy2=startY+li*lh;if(cy2+lh<by||cy2>by+bh)continue;const line=lines[li];const lw=this._mTxt(cx,line,b.letterSpacing*s);let lx;if(b.alignment==='left')lx=tx;else if(b.alignment==='right')lx=tx+tw-lw;else if(b.alignment==='justify'&&li<lines.length-1&&lines.length>1){this._justifyLine(cx,line,tx,cy2+fs*0.12,tw,b.letterSpacing*s,fs);continue}else lx=tx+(tw-lw)/2;if(b.letterSpacing>0){let px=lx;cx.textAlign='left';for(const c of line){cx.fillText(c,px,cy2+fs*0.12);px+=cx.measureText(c).width+b.letterSpacing*s}}else{cx.textAlign='left';cx.fillText(line,lx,cy2+fs*0.12)}if(b.underline){cx.strokeStyle=b.fontColor;cx.lineWidth=Math.max(1,fs*0.06);cx.beginPath();cx.moveTo(lx,cy2+fs*0.95);cx.lineTo(lx+lw,cy2+fs*0.95);cx.stroke()}}cx.restore()}
+  if(ObjEditor&&ObjEditor._objects.length&&AppMode._cur==='object'){ObjEditor._renderObjects(cx,s)}
+  if(this.showB){for(let i=0;i<this.boxes.length;i++){const b=this.boxes[i];const isSel=i===this.sel;const bx=b.x*s,by=b.y*s,bw=b.w*s,bh=b.h*s;cx.strokeStyle=isSel?'#e63946':b.modified?'rgba(249,202,36,.55)':b.isCustom?'rgba(34,211,238,.45)':'rgba(46,204,113,.35)';cx.lineWidth=isSel?2.5:1;cx.setLineDash(isSel?[6,4]:b.isCustom?[4,4]:[]);cx.strokeRect(bx,by,bw,bh);cx.setLineDash([]);const label=b.isCustom?`C${i+1}`:`#${i+1}`;cx.font=`bold ${Math.max(9,10*s)}px Inter,sans-serif`;const tlw=cx.measureText(label).width;cx.fillStyle=isSel?'rgba(230,57,70,.85)':b.isCustom?'rgba(34,211,238,.75)':'rgba(46,204,113,.6)';const lbh=Math.max(14,15*s);cx.fillRect(bx,by-lbh-1,tlw+8*s,lbh);cx.fillStyle='#fff';cx.textBaseline='middle';cx.textAlign='left';cx.fillText(label,bx+4*s,by-lbh/2-1)}}
+  if(this.sel>=0)this._drawHandles(this.boxes[this.sel]);
+  if(this.drawing&&this.ds&&this.de){const x1=this.ds.x*s,y1=this.ds.y*s,x2=this.de.x*s,y2=this.de.y*s;cx.strokeStyle='#22d3ee';cx.lineWidth=2;cx.setLineDash([6,4]);cx.strokeRect(Math.min(x1,x2),Math.min(y1,y2),Math.abs(x2-x1),Math.abs(y2-y1));cx.fillStyle='rgba(34,211,238,.06)';cx.fillRect(Math.min(x1,x2),Math.min(y1,y2),Math.abs(x2-x1),Math.abs(y2-y1));cx.setLineDash([])}}
+_rr(cx,x,y,w,h,r){r=Math.min(r,w/2,h/2);cx.beginPath();cx.moveTo(x+r,y);cx.lineTo(x+w-r,y);cx.arcTo(x+w,y,x+w,y+r,r);cx.lineTo(x+w,y+h-r);cx.arcTo(x+w,y+h,x+w-r,y+h,r);cx.lineTo(x+r,y+h);cx.arcTo(x,y+h,x,y+h-r,r);cx.lineTo(x,y+r);cx.arcTo(x,y,x+r,y,r);cx.closePath()}
+_justifyLine(cx,text,x,y,maxW,ls,fs){const words=text.split(/\s+/).filter(w=>w);if(words.length<=1){cx.textAlign='left';cx.fillText(text,x,y);return}let totalW=0;for(const w of words)totalW+=this._mTxt(cx,w,ls);const gap=(maxW-totalW)/(words.length-1);let px=x;cx.textAlign='left';for(const w of words){if(ls>0){for(const c of w){cx.fillText(c,px,y);px+=cx.measureText(c).width+ls}px-=ls}else{cx.fillText(w,px,y);px+=cx.measureText(w).width}px+=gap}}
+_drawHandles(b){const cx=this.cx,s=this.scale;const bx=b.x*s,by=b.y*s,bw=b.w*s,bh=b.h*s;const hs=10;const handles=[{x:bx,y:by},{x:bx+bw,y:by},{x:bx,y:by+bh},{x:bx+bw,y:by+bh},{x:bx+bw/2,y:by},{x:bx+bw/2,y:by+bh},{x:bx,y:by+bh/2},{x:bx+bw,y:by+bh/2}];for(const h of handles){cx.fillStyle='rgba(0,0,0,.4)';cx.fillRect(h.x-hs/2+1,h.y-hs/2+1,hs,hs);cx.fillStyle='#fff';cx.fillRect(h.x-hs/2,h.y-hs/2,hs,hs);cx.strokeStyle='#e63946';cx.lineWidth=2;cx.strokeRect(h.x-hs/2,h.y-hs/2,hs,hs)}if(b.autoFit){const pl=b.padLeft*s,pr=b.padRight*s,pt=b.padTop*s,pb=b.padBottom*s;cx.strokeStyle='rgba(255,255,255,.12)';cx.lineWidth=1;cx.setLineDash([3,3]);cx.strokeRect(bx+pl,by+pt,bw-pl-pr,bh-pt-pb);cx.setLineDash([])}}
+_addCustom(x,y,w,h){const bg=this._sampleBg(x,y,w,h);this.boxes.push(this._mkBox(x,y,w,h,'',bg,1,true,Math.max(14,Math.round(h*0.6))));const idx=this.boxes.length-1;this.boxes[idx].modified=true;this._listAll();this._updStats();this.select(idx);this.setMode('select');History.snapshot('Region added');toast('Region added — type text','info')}
+_sampleBg(x,y,w,h){try{const s=this.scale;const px=[];for(let i=0;i<10;i++){const sx=Math.floor((x+w*i/10)*s);const d=this.cx.getImageData(sx,Math.floor(y*s),1,1).data;px.push([d[0],d[1],d[2]]);const d2=this.cx.getImageData(sx,Math.floor((y+h)*s),1,1).data;px.push([d2[0],d2[1],d2[2]])}const avg=px.reduce((a,p)=>[a[0]+p[0],a[1]+p[1],a[2]+p[2]],[0,0,0]);const n=px.length;return'#'+[avg[0]/n,avg[1]/n,avg[2]/n].map(v=>Math.round(v).toString(16).padStart(2,'0')).join('')}catch{return'#ffffff'}}
+select(i){this.sel=i;this.render();this._syncUI();this._highlightList();if(i>=0){const el=document.querySelector(`.di[data-i="${i}"]`);if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'})}}
+selNext(){const n=this.boxes.length;if(!n)return;this.select((this.sel+1)%n)}
+selPrev(){const n=this.boxes.length;if(!n)return;this.select(this.sel<=0?n-1:this.sel-1)}
+_syncUI(){const ep=$('ep'),prm=$('prm');if(this.sel<0){ep.classList.remove('on');prm.style.display='block';return}ep.classList.add('on');prm.style.display='none';const b=this.boxes[this.sel];$('oInfo').innerHTML=b.isCustom?'<i class="fas fa-draw-polygon"></i> Custom region':`<i class="fas fa-info-circle"></i> Original: "<b>${this._esc(b.origText)}</b>" · ${Math.round(b.confidence*100)}%`;$('eTxt').value=b.text;$('eFont').value=b.fontFamily;$('eSzR').value=b.fontSize;$('eSzN').value=b.fontSize;$('eSzR').disabled=b.autoFit;$('eSzN').disabled=b.autoFit;$('szLock').style.display=b.autoFit?'inline':'none';$('sB').classList.toggle('on',b.bold);$('sI').classList.toggle('on',b.italic);$('sU').classList.toggle('on',b.underline);['L','C','R','J'].forEach(a=>{const id='a'+a;$(id).classList.toggle('on',b.alignment==={L:'left',C:'center',R:'right',J:'justify'}[a])});$('eFc').value=b.fontColor;$('eFcH').textContent=b.fontColor;$('eBg').value=b.bgColor;$('eBgH').textContent=b.bgColor;$('eOp').value=Math.round(b.bgOpacity*100);$('eOpN').value=Math.round(b.bgOpacity*100);$('eBw').value=b.borderWidth;$('eBwN').value=b.borderWidth;$('eBc').value=b.borderColor;$('eBcH').textContent=b.borderColor;$('eBr').value=b.borderRadius;$('eBrN').value=b.borderRadius;$('eLock').checked=b.lockAR;$('eLs').value=b.letterSpacing;$('eLsN').value=b.letterSpacing;$('eLh').value=b.lineHeight;$('eLhN').value=b.lineHeight;$('afTog').checked=b.autoFit;$('afOpts').style.display=b.autoFit?'flex':'none';['both','width','height','shrink'].forEach(m=>$('fm-'+m).classList.toggle('on',b.fitMode===m));$('pT').value=b.padTop;$('pB').value=b.padBottom;$('pL').value=b.padLeft;$('pR').value=b.padRight;$('afMax').value=b.maxFS;$('afMaxN').value=b.maxFS;$('afMin').value=b.minFS;$('afMinN').value=b.minFS;$('afComp').textContent=b.compFS!==null?b.compFS:'--';this._updOv()}
+_updOv(){if(this.sel<0)return;const o=this._overflow(this.sel);const el=$('ovInd');if(o.ov){el.className='ov bad';el.innerHTML=`<i class="fas fa-exclamation-triangle"></i> Overflow ${o.tW}×${o.tH} > ${o.aW}×${o.aH}`}else{el.className='ov gd';el.innerHTML=`<i class="fas fa-check-circle"></i> Fits ${o.tW}×${o.tH} in ${o.aW}×${o.aH}`}}
+_esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+ch(prop,val){if(this.sel<0)return;const b=this.boxes[this.sel];switch(prop){case'text':b.text=val;break;case'fontFamily':b.fontFamily=val;break;case'fontSize':if(!b.autoFit){b.fontSize=+val}break;case'fontColor':b.fontColor=val;break;case'bgColor':b.bgColor=val;break;case'bgOpacity':b.bgOpacity=+val;break;case'borderWidth':b.borderWidth=+val;break;case'borderColor':b.borderColor=val;break;case'borderRadius':b.borderRadius=+val;break;case'letterSpacing':b.letterSpacing=+val;break;case'lineHeight':b.lineHeight=+val;break;case'lockAR':b.lockAR=val;if(val)b.aspectRatio=b.w/b.h;break}b.modified=true;if(b.autoFit&&['text','fontFamily','letterSpacing','lineHeight'].includes(prop)){this._fit(this.sel);$('eSzR').value=b.fontSize;$('eSzN').value=b.fontSize;$('afComp').textContent=b.compFS}this._updOv();this.render();this._updMod();this._updStats()}
+tog(prop){if(this.sel<0)return;const b=this.boxes[this.sel];b[prop]=!b[prop];b.modified=true;$({bold:'sB',italic:'sI',underline:'sU'}[prop]).classList.toggle('on');if(b.autoFit){this._fit(this.sel);$('eSzR').value=b.fontSize;$('eSzN').value=b.fontSize;$('afComp').textContent=b.compFS}this._updOv();this.render()}
+align(a){if(this.sel<0)return;this.boxes[this.sel].alignment=a;this.boxes[this.sel].modified=true;['L','C','R','J'].forEach(k=>{const id='a'+k;$(id).classList.toggle('on',a==={L:'left',C:'center',R:'right',J:'justify'}[k])});this.render()}
+setAutoFit(on){if(this.sel<0)return;const b=this.boxes[this.sel];b.autoFit=on;$('afOpts').style.display=on?'flex':'none';$('eSzR').disabled=on;$('eSzN').disabled=on;$('szLock').style.display=on?'inline':'none';if(on){this._fit(this.sel);$('eSzR').value=b.fontSize;$('eSzN').value=b.fontSize;$('afComp').textContent=b.compFS}b.modified=true;this._updOv();this.render();this._listAll()}
+fitMode(m){if(this.sel<0)return;this.boxes[this.sel].fitMode=m;['both','width','height','shrink'].forEach(v=>$('fm-'+v).classList.toggle('on',v===m));if(this.boxes[this.sel].autoFit){this._fit(this.sel);$('eSzR').value=this.boxes[this.sel].fontSize;$('eSzN').value=this.boxes[this.sel].fontSize;$('afComp').textContent=this.boxes[this.sel].compFS}this._updOv();this.render()}
+pad(){if(this.sel<0)return;const b=this.boxes[this.sel];b.padTop=+$('pT').value||0;b.padBottom=+$('pB').value||0;b.padLeft=+$('pL').value||0;b.padRight=+$('pR').value||0;if(b.autoFit){this._fit(this.sel);$('eSzR').value=b.fontSize;$('eSzN').value=b.fontSize;$('afComp').textContent=b.compFS}b.modified=true;this._updOv();this.render()}
+refit(){if(this.sel<0)return;const b=this.boxes[this.sel];b.maxFS=+$('afMaxN').value||300;b.minFS=+$('afMinN').value||8;if(b.autoFit){this._fit(this.sel);$('eSzR').value=b.fontSize;$('eSzN').value=b.fontSize;$('afComp').textContent=b.compFS}this._updOv();this.render()}
+editAll(){this.boxes.forEach((b,i)=>{b.modified=true});this.render();this._listAll();this._updStats();if(this.boxes.length)this.select(0);History.snapshot('Edit all');toast(`All ${this.boxes.length} marked`,'info')}
+fitAll(){this.boxes.forEach((b,i)=>{b.autoFit=true;b.modified=true;this._fit(i)});this.render();this._listAll();this._updStats();if(this.sel>=0)this._syncUI();History.snapshot('Fit all');toast('Auto-fit applied to all','info')}
+applyNext(){if(this.sel<0)return;this.boxes[this.sel].modified=true;this._listAll();this._updStats();this.selNext();History.snapshot('Apply edit');toast('Applied','ok')}
+resetCur(){if(this.sel<0)return;const b=this.boxes[this.sel];const nb=this._mkBox(b.x,b.y,b.w,b.h,b.origText,b.bgColor,b.confidence,b.isCustom,b.fontSize);Object.assign(b,nb);this.render();this._syncUI();this._listAll();History.snapshot('Reset region');toast('Reset','info')}
+resetAll(){this.boxes.forEach(b=>{const nb=this._mkBox(b.x,b.y,b.w,b.h,b.origText,b.bgColor,b.confidence,b.isCustom);Object.assign(b,nb)});this.sel=-1;this.render();this._syncUI();this._listAll();this._updStats();History.snapshot('Reset all');toast('All reset','info')}
+deleteBox(i){this.boxes.splice(i,1);if(this.sel===i)this.sel=-1;else if(this.sel>i)this.sel--;this.render();this._syncUI();this._listAll();this._updStats();History.snapshot('Delete region');toast('Deleted','info')}
+_listAll(){const el=$('dList');$('cAll').textContent=this.boxes.length;if(!this.boxes.length){el.innerHTML='<div class="nd">No text detected</div>';return}el.innerHTML='';this.boxes.forEach((b,i)=>{const d=document.createElement('div');d.className=`di${b.modified?' mod':''}${i===this.sel?' sel':''}`;d.dataset.i=i;const af=b.autoFit?'<span style="font-size:.55rem;background:var(--wa);color:#000;padding:1px 3px;border-radius:3px;margin-left:2px">FIT</span>':'';d.innerHTML=`<span class="dx" style="${b.isCustom?'background:linear-gradient(135deg,#22d3ee,#0abde3)':''}">${i+1}</span><span class="dt">${this._esc(b.text||b.origText||'(empty)')}${af}</span><span class="dc" style="${b.isCustom?'color:var(--cy)':''}">${b.isCustom?'Custom':Math.round(b.confidence*100)+'%'}</span><div class="da"><button class="db" onclick="event.stopPropagation();E.select(${i})"><i class="fas fa-pen"></i></button>${b.isCustom?`<button class="db" onclick="event.stopPropagation();E.deleteBox(${i})"><i class="fas fa-trash"></i></button>`:''}</div>`;d.onclick=()=>this.select(i);el.appendChild(d)});this._updMod()}
+_updMod(){const el=$('mList');const mod=this.boxes.filter(b=>b.modified);$('cMod').textContent=mod.length;if(!mod.length){el.innerHTML='<div class="nd">No edits yet</div>';return}el.innerHTML='';mod.forEach(b=>{const i=this.boxes.indexOf(b);const d=document.createElement('div');d.className='di';d.dataset.i=i;d.innerHTML=`<span class="dx" style="background:var(--wa)">${i+1}</span><span class="dt">${this._esc(b.text||'(empty)')}</span><span class="dc" style="color:var(--wa)">Edited</span>`;d.onclick=()=>this.select(i);el.appendChild(d)})}
+_highlightList(){document.querySelectorAll('.di').forEach(d=>{d.classList.toggle('sel',+d.dataset.i===this.sel)})}
+_updStats(){const t=this.boxes.length,m=this.boxes.filter(b=>b.modified).length,f=this.boxes.filter(b=>b.autoFit).length,c=this.boxes.filter(b=>b.isCustom).length;$('stats').innerHTML=`<div class="sc"><i class="fas fa-font"></i> <b>${t}</b></div><div class="sc"><i class="fas fa-pen"></i> <b>${m}</b></div><div class="sc"><i class="fas fa-text-width"></i> <b>${f}</b></div>${c?`<div class="sc"><i class="fas fa-vector-square"></i> <b>${c}</b></div>`:''}`}
+tab(t){document.querySelectorAll('.sp-t').forEach((e,i)=>e.classList.toggle('on',i===(t==='all'?0:1)));$('tAll').classList.toggle('on',t==='all');$('tMod').classList.toggle('on',t==='mod');if(t==='mod')this._updMod()}
+download(){const c=document.createElement('canvas');c.width=this.img.naturalWidth;c.height=this.img.naturalHeight;const cx=c.getContext('2d');cx.drawImage(this.img,0,0);const origScale=this.scale;this.scale=1;const origCx=this.cx;this.cx=cx;for(let i=0;i<this.boxes.length;i++){const b=this.boxes[i];if(!b.modified)continue;this._renderBox(cx,b,1)}this.cx=origCx;this.scale=origScale;const a=document.createElement('a');a.download='edited.png';a.href=c.toDataURL('image/png');a.click();toast('Downloaded!')}
+_renderBox(cx,b,s){const bx=b.x*s,by=b.y*s,bw=b.w*s,bh=b.h*s;const br=Math.min(b.borderRadius*s,bw/2,bh/2);cx.save();cx.globalAlpha=b.bgOpacity;cx.fillStyle=b.bgColor;if(br>0){this._rr(cx,bx,by,bw,bh,br);cx.fill()}else cx.fillRect(bx,by,bw,bh);cx.restore();if(b.borderWidth>0){cx.strokeStyle=b.borderColor;cx.lineWidth=b.borderWidth*s;if(br>0){this._rr(cx,bx,by,bw,bh,br);cx.stroke()}else cx.strokeRect(bx,by,bw,bh)}const pl=b.padLeft*s,pr2=b.padRight*s,pt=b.padTop*s,pb=b.padBottom*s;const tx=bx+pl,tw=bw-pl-pr2,ty=by+pt,th=bh-pt-pb;if(tw<=0||th<=0)return;const fs=b.fontSize*s;cx.save();cx.beginPath();if(br>0)this._rr(cx,bx,by,bw,bh,br);else cx.rect(bx,by,bw,bh);cx.clip();cx.font=`${b.italic?'italic ':''}${b.bold?'bold ':''}${fs}px "${b.fontFamily}"`;cx.fillStyle=b.fontColor;cx.textBaseline='top';const lines=this._wrap(cx,b.text||'',tw,b.letterSpacing*s);const lh=fs*(b.lineHeight/100);const totalH=lines.length*lh;let startY=ty+(th-totalH)/2;if(startY<ty)startY=ty;for(let li=0;li<lines.length;li++){const cy2=startY+li*lh;const line=lines[li];const lw=this._mTxt(cx,line,b.letterSpacing*s);let lx;if(b.alignment==='left')lx=tx;else if(b.alignment==='right')lx=tx+tw-lw;else if(b.alignment==='justify'&&li<lines.length-1){this._justifyLine(cx,line,tx,cy2+fs*0.12,tw,b.letterSpacing*s,fs);continue}else lx=tx+(tw-lw)/2;if(b.letterSpacing>0){let px=lx;cx.textAlign='left';for(const c of line){cx.fillText(c,px,cy2+fs*0.12);px+=cx.measureText(c).width+b.letterSpacing*s}}else{cx.textAlign='left';cx.fillText(line,lx,cy2+fs*0.12)}if(b.underline){cx.strokeStyle=b.fontColor;cx.lineWidth=Math.max(1,fs*0.06);cx.beginPath();cx.moveTo(lx,cy2+fs*0.95);cx.lineTo(lx+lw,cy2+fs*0.95);cx.stroke()}}cx.restore()}
+async downloadHD(){const mods=this.boxes.filter(b=>b.modified).map(b=>({bbox:[[b.x,b.y],[b.x+b.w,b.y],[b.x+b.w,b.y+b.h],[b.x,b.y+b.h]],newText:b.text,fontSize:b.fontSize,fontColor:b.fontColor,bgColor:b.bgColor,bold:b.bold,alignment:b.alignment}));if(!mods.length){toast('No edits','no');return}showLd(true,'Rendering HD…');try{const r=await fetch(`${API}/api/edit`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:this.b64,edits:mods})});const d=await r.json();if(d.error){toast(d.error,'no');showLd(false);return}const a=document.createElement('a');a.download='edited_hd.png';a.href=`data:image/png;base64,${d.image}`;a.click();showLd(false);toast('HD downloaded!')}catch(e){toast('Server error','no');showLd(false)}}
+}
 const E=new Editor();
 
-/*═══════════════════════════════════════════════════════════
-  NEW JAVASCRIPT — Features Engine
-  Part 1: AppMode, History, ContextMenu, SmartSnap,
-          Enhance, BgEditor stubs
-═══════════════════════════════════════════════════════════*/
-
-/* ── App Mode Manager ─────────────────────────────────── */
+/* ── App Mode Manager ── */
 const AppMode={
   _cur:'text',
   set(mode){
@@ -1054,1440 +1048,271 @@ const AppMode={
     ['mdText','mdObj','mdBg'].forEach(id=>$(id).classList.remove('on'));
     const map={text:'mdText',object:'mdObj',background:'mdBg'};
     if(map[mode])$(map[mode]).classList.add('on');
-
-    // Toggle panel visibility
-    const showText=mode==='text';
-    const showObj=mode==='object';
-    const showBg=mode==='background';
-
+    const showText=mode==='text',showObj=mode==='object',showBg=mode==='background';
     $('textTabs').style.display=showText?'flex':'none';
     $('textBatch').style.display=showText?'flex':'none';
-    $('tAll').classList.toggle('on',showText);
-    $('tMod').classList.remove('on');
+    $('tAll').classList.toggle('on',showText);$('tMod').classList.remove('on');
     $('prm').style.display=showText?'block':'none';
     $('ep').classList.toggle('on',showText&&E.sel>=0);
-
     $('objPanel').classList.toggle('on',showObj);
     $('bgPanel').classList.toggle('on',showBg);
     $('enhPanel').classList.remove('on');
-
     $('panelTitle').textContent=showText?'Text Regions':showObj?'Objects':'Background';
-
     const bgSt=$('bgStatus');
     if(showBg){bgSt.innerHTML='<i class="fas fa-pen-to-square"></i> Background: Editing';bgSt.style.color='var(--wa)';bgSt.style.borderColor='rgba(249,202,36,.2)';bgSt.style.background='rgba(249,202,36,.06)'}
     else{bgSt.innerHTML='<i class="fas fa-shield-halved"></i> Background: Preserved';bgSt.style.color='var(--cy)';bgSt.style.borderColor='rgba(34,211,238,.12)';bgSt.style.background='rgba(34,211,238,.06)'}
-
     E.render();
   }
 };
 
-/* ── History / Undo-Redo Manager ──────────────────────── */
+/* ── History / Undo-Redo ── */
 const History={
   _stack:[],_idx:-1,_max:50,
-
   snapshot(label='Edit'){
     if(!E.img)return;
-    // Capture current state
-    const state={
-      label,time:Date.now(),
-      boxes:JSON.parse(JSON.stringify(E.boxes)),
-      sel:E.sel,
-      thumb:null
-    };
-    // Generate thumbnail
-    try{
-      const tc=document.createElement('canvas');
-      tc.width=120;tc.height=80;const tx=tc.getContext('2d');
-      tx.drawImage(E.cv,0,0,120,80);
-      state.thumb=tc.toDataURL('image/jpeg',0.5);
-    }catch(e){}
-    // Truncate any redo states
-    this._stack=this._stack.slice(0,this._idx+1);
-    this._stack.push(state);
-    if(this._stack.length>this._max)this._stack.shift();
-    this._idx=this._stack.length-1;
-    this._updateUI();
+    const state={label,time:Date.now(),boxes:JSON.parse(JSON.stringify(E.boxes)),sel:E.sel,thumb:null};
+    try{const tc=document.createElement('canvas');tc.width=120;tc.height=80;const tx=tc.getContext('2d');tx.drawImage(E.cv,0,0,120,80);state.thumb=tc.toDataURL('image/jpeg',0.5)}catch(e){}
+    this._stack=this._stack.slice(0,this._idx+1);this._stack.push(state);
+    if(this._stack.length>this._max)this._stack.shift();this._idx=this._stack.length-1;this._updateUI();
   },
-
-  undo(){
-    if(this._idx<=0)return;
-    this._idx--;
-    this._restore(this._stack[this._idx]);
-    toast('Undo: '+this._stack[this._idx].label,'info');
-  },
-
-  redo(){
-    if(this._idx>=this._stack.length-1)return;
-    this._idx++;
-    this._restore(this._stack[this._idx]);
-    toast('Redo: '+this._stack[this._idx].label,'info');
-  },
-
-  _restore(state){
-    E.boxes=JSON.parse(JSON.stringify(state.boxes));
-    E.sel=state.sel;
-    E.render();E._syncUI();E._listAll();E._updStats();
-    this._updateUI();
-  },
-
-  _updateUI(){
-    $('undoBtn').disabled=this._idx<=0;
-    $('redoBtn').disabled=this._idx>=this._stack.length-1;
-    $('undoCount').textContent=`${this._idx} / ${this._stack.length-1}`;
-    $('histCount').textContent=this._stack.length;
-    this._renderTrack();
-  },
-
-  _renderTrack(){
-    const el=$('histTrack');el.innerHTML='';
-    this._stack.forEach((s,i)=>{
-      const div=document.createElement('div');
-      div.className=`history-snap${i===this._idx?' cur':''}`;
-      div.onclick=()=>{this._idx=i;this._restore(s)};
-      div.innerHTML=`<canvas width="120" height="48"></canvas><div class="hs-label">${s.label}</div>`;
-      if(s.thumb){
-        const img=new Image();img.onload=()=>{
-          const c=div.querySelector('canvas');const cx=c.getContext('2d');
-          cx.drawImage(img,0,0,120,48);
-        };img.src=s.thumb;
-      }
-      el.appendChild(div);
-    });
-    // Auto scroll to current
-    const cur=el.querySelector('.cur');if(cur)cur.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
-  },
-
+  undo(){if(this._idx<=0)return;this._idx--;this._restore(this._stack[this._idx]);toast('Undo: '+this._stack[this._idx].label,'info')},
+  redo(){if(this._idx>=this._stack.length-1)return;this._idx++;this._restore(this._stack[this._idx]);toast('Redo: '+this._stack[this._idx].label,'info')},
+  _restore(state){E.boxes=JSON.parse(JSON.stringify(state.boxes));E.sel=state.sel;E.render();E._syncUI();E._listAll();E._updStats();this._updateUI()},
+  _updateUI(){$('undoBtn').disabled=this._idx<=0;$('redoBtn').disabled=this._idx>=this._stack.length-1;$('undoCount').textContent=`${this._idx} / ${this._stack.length-1}`;$('histCount').textContent=this._stack.length;this._renderTrack()},
+  _renderTrack(){const el=$('histTrack');el.innerHTML='';this._stack.forEach((s,i)=>{const div=document.createElement('div');div.className=`history-snap${i===this._idx?' cur':''}`;div.onclick=()=>{this._idx=i;this._restore(s)};div.innerHTML=`<canvas width="120" height="48"></canvas><div class="hs-label">${s.label}</div>`;if(s.thumb){const img=new Image();img.onload=()=>{const c=div.querySelector('canvas');const cx=c.getContext('2d');cx.drawImage(img,0,0,120,48)};img.src=s.thumb}el.appendChild(div)});const cur=el.querySelector('.cur');if(cur)cur.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'})},
   togglePanel(){$('histPanel').classList.toggle('on');if($('histPanel').classList.contains('on'))this._renderTrack()},
 };
 
-/* ── Context Menu ─────────────────────────────────────── */
+/* ── Context Menu ── */
 const CtxMenu={
   _target:-1,
-  show(x,y,idx){
-    this._target=idx;
-    const m=$('ctxMenu');m.style.left=x+'px';m.style.top=y+'px';m.classList.add('on');
-  },
+  show(x,y,idx){this._target=idx;const m=$('ctxMenu');m.style.left=x+'px';m.style.top=y+'px';m.classList.add('on')},
   hide(){$('ctxMenu').classList.remove('on')},
-  action(a){
-    this.hide();
-    const i=this._target;
-    switch(a){
-      case'edit':E.select(i);break;
-      case'duplicate':if(i>=0){const b=E.boxes[i];const nb=JSON.parse(JSON.stringify(b));nb.x+=20;nb.y+=20;nb.modified=true;E.boxes.push(nb);E._listAll();E._updStats();E.select(E.boxes.length-1);History.snapshot('Duplicate');toast('Duplicated','ok')}break;
-      case'move':E.select(i);toast('Drag to move','info');break;
-      case'replace':E.select(i);ImgSearch.openForReplace();break;
-      case'editbg':AppMode.set('background');break;
-      case'recolor':E.select(i);AppMode.set('object');ObjEditor.recolor();break;
-      case'bringfront':if(i>=0){const b=E.boxes.splice(i,1)[0];E.boxes.push(b);E._listAll();E.render();History.snapshot('Bring front')}break;
-      case'sendback':if(i>=0){const b=E.boxes.splice(i,1)[0];E.boxes.unshift(b);E._listAll();E.render();History.snapshot('Send back')}break;
-      case'delete':E.deleteBox(i);break;
-    }
-  }
+  action(a){this.hide();const i=this._target;switch(a){
+    case'edit':E.select(i);break;
+    case'duplicate':if(i>=0){const b=E.boxes[i];const nb=JSON.parse(JSON.stringify(b));nb.x+=20;nb.y+=20;nb.modified=true;E.boxes.push(nb);E._listAll();E._updStats();E.select(E.boxes.length-1);History.snapshot('Duplicate');toast('Duplicated','ok')}break;
+    case'move':E.select(i);toast('Drag to move','info');break;
+    case'replace':E.select(i);ImgSearch.openForReplace();break;
+    case'editbg':AppMode.set('background');break;
+    case'recolor':E.select(i);AppMode.set('object');ObjEditor.recolor();break;
+    case'bringfront':if(i>=0){const b=E.boxes.splice(i,1)[0];E.boxes.push(b);E._listAll();E.render();History.snapshot('Bring front')}break;
+    case'sendback':if(i>=0){const b=E.boxes.splice(i,1)[0];E.boxes.unshift(b);E._listAll();E.render();History.snapshot('Send back')}break;
+    case'delete':E.deleteBox(i);break;
+  }}
 };
-
-// Right-click context menu on canvas
-E.cv.addEventListener('contextmenu',e=>{
-  e.preventDefault();
-  const p=E._ic(e);const i=E._hit(p.x,p.y);
-  if(i>=0){E.select(i);CtxMenu.show(e.clientX,e.clientY,i)}else{CtxMenu.hide()}
-});
+E.cv.addEventListener('contextmenu',e=>{e.preventDefault();const p=E._ic(e);const i=E._hit(p.x,p.y);if(i>=0){E.select(i);CtxMenu.show(e.clientX,e.clientY,i)}else{CtxMenu.hide()}});
 document.addEventListener('click',()=>CtxMenu.hide());
 
-/* ── Smart Snap Guides ────────────────────────────────── */
+/* ── Smart Snap Guides ── */
 const SnapGuides={
   _enabled:true,_threshold:8,
-
   check(box,allBoxes,imgW,imgH){
-    if(!this._enabled)return{dx:0,dy:0,guides:[]};
-    const guides=[];let dx=0,dy=0;
-    const cx=box.x+box.w/2,cy=box.y+box.h/2;
-    const imgCx=imgW/2,imgCy=imgH/2;
-    const t=this._threshold;
-
-    // Snap to image center
+    if(!this._enabled)return{dx:0,dy:0,guides:[]};const guides=[];let dx=0,dy=0;
+    const cx=box.x+box.w/2,cy=box.y+box.h/2,imgCx=imgW/2,imgCy=imgH/2,t=this._threshold;
     if(Math.abs(cx-imgCx)<t){dx=imgCx-cx;guides.push({type:'v',pos:imgCx})}
     if(Math.abs(cy-imgCy)<t){dy=imgCy-cy;guides.push({type:'h',pos:imgCy})}
-
-    // Snap to other boxes
-    for(const ob of allBoxes){
-      if(ob===box)continue;
-      const ocx=ob.x+ob.w/2,ocy=ob.y+ob.h/2;
-      // Horizontal alignment
+    for(const ob of allBoxes){if(ob===box)continue;const ocx=ob.x+ob.w/2,ocy=ob.y+ob.h/2;
       if(Math.abs(cy-ocy)<t&&!dy){dy=ocy-cy;guides.push({type:'h',pos:ocy})}
       if(Math.abs(box.y-ob.y)<t&&!dy){dy=ob.y-box.y;guides.push({type:'h',pos:ob.y})}
       if(Math.abs(box.y+box.h-(ob.y+ob.h))<t&&!dy){dy=(ob.y+ob.h)-(box.y+box.h);guides.push({type:'h',pos:ob.y+ob.h})}
-      // Vertical alignment
       if(Math.abs(cx-ocx)<t&&!dx){dx=ocx-cx;guides.push({type:'v',pos:ocx})}
       if(Math.abs(box.x-ob.x)<t&&!dx){dx=ob.x-box.x;guides.push({type:'v',pos:ob.x})}
       if(Math.abs(box.x+box.w-(ob.x+ob.w))<t&&!dx){dx=(ob.x+ob.w)-(box.x+box.w);guides.push({type:'v',pos:ob.x+ob.w})}
     }
-
-    // Rule of thirds
     const t3x=[imgW/3,imgW*2/3],t3y=[imgH/3,imgH*2/3];
     for(const tx of t3x){if(Math.abs(cx-tx)<t&&!dx){dx=tx-cx;guides.push({type:'v',pos:tx})}}
     for(const ty of t3y){if(Math.abs(cy-ty)<t&&!dy){dy=ty-cy;guides.push({type:'h',pos:ty})}}
-
     return{dx,dy,guides};
   },
-
-  render(guides,scale){
-    const sh=$('snapH'),sv=$('snapV');
-    sh.style.display='none';sv.style.display='none';
-    for(const g of guides){
-      if(g.type==='h'){sh.style.display='block';sh.style.top=(g.pos*scale)+'px'}
-      if(g.type==='v'){sv.style.display='block';sv.style.left=(g.pos*scale)+'px'}
-    }
-  },
-
+  render(guides,scale){const sh=$('snapH'),sv=$('snapV');sh.style.display='none';sv.style.display='none';for(const g of guides){if(g.type==='h'){sh.style.display='block';sh.style.top=(g.pos*scale)+'px'}if(g.type==='v'){sv.style.display='block';sv.style.left=(g.pos*scale)+'px'}}},
   clear(){$('snapH').style.display='none';$('snapV').style.display='none'}
 };
 
-/* ── Enhancement Engine ───────────────────────────────── */
+/* ── Enhancement Engine ── */
 const Enhance={
   _active:false,_vals:{brightness:0,contrast:0,saturation:0,sharpness:0,temperature:0,vignette:0},
-
-  toggle(){
-    $('enhPanel').classList.toggle('on');
-    $('mdEnh').classList.toggle('on',$('enhPanel').classList.contains('on'));
-  },
-
-  set(prop,val){
-    this._vals[prop]=val;
-    $('enh'+prop.charAt(0).toUpperCase()+prop.slice(1,3).toUpperCase()+prop.slice(3)+'V');
-    // Update display values
-    const ids={brightness:'enhBriV',contrast:'enhConV',saturation:'enhSatV',sharpness:'enhShpV',temperature:'enhTmpV',vignette:'enhVigV'};
-    if(ids[prop])$(ids[prop]).textContent=val;
-    this._active=Object.values(this._vals).some(v=>v!==0);
-    E.render();
-  },
-
-  _getFilter(){
-    const v=this._vals;
-    const b=1+(v.brightness/100);
-    const c=1+(v.contrast/100);
-    const s=1+(v.saturation/100);
-    let f=`brightness(${b}) contrast(${c}) saturate(${s})`;
-    if(v.temperature>0)f+=` sepia(${v.temperature/200})`;
-    if(v.temperature<0)f+=` hue-rotate(${v.temperature/2}deg)`;
-    return f;
-  },
-
-  oneTap(){
-    this._vals={brightness:8,contrast:12,saturation:10,sharpness:15,temperature:5,vignette:0};
-    this._active=true;
-    // Update slider positions
-    $('enhBri').value=8;$('enhBriV').textContent='8';
-    $('enhCon').value=12;$('enhConV').textContent='12';
-    $('enhSat').value=10;$('enhSatV').textContent='10';
-    $('enhShp').value=15;$('enhShpV').textContent='15';
-    $('enhTmp').value=5;$('enhTmpV').textContent='5';
-    $('enhVig').value=0;$('enhVigV').textContent='0';
-    E.render();History.snapshot('One-tap enhance');toast('✨ Enhanced!','ok');
-  },
-
+  toggle(){$('enhPanel').classList.toggle('on');$('mdEnh').classList.toggle('on',$('enhPanel').classList.contains('on'))},
+  set(prop,val){this._vals[prop]=val;const ids={brightness:'enhBriV',contrast:'enhConV',saturation:'enhSatV',sharpness:'enhShpV',temperature:'enhTmpV',vignette:'enhVigV'};if(ids[prop])$(ids[prop]).textContent=val;this._active=Object.values(this._vals).some(v=>v!==0);E.render()},
+  _getFilter(){const v=this._vals;const b=1+(v.brightness/100),c=1+(v.contrast/100),s=1+(v.saturation/100);let f=`brightness(${b}) contrast(${c}) saturate(${s})`;if(v.temperature>0)f+=` sepia(${v.temperature/200})`;if(v.temperature<0)f+=` hue-rotate(${v.temperature/2}deg)`;return f},
+  oneTap(){this._vals={brightness:8,contrast:12,saturation:10,sharpness:15,temperature:5,vignette:0};this._active=true;$('enhBri').value=8;$('enhBriV').textContent='8';$('enhCon').value=12;$('enhConV').textContent='12';$('enhSat').value=10;$('enhSatV').textContent='10';$('enhShp').value=15;$('enhShpV').textContent='15';$('enhTmp').value=5;$('enhTmpV').textContent='5';$('enhVig').value=0;$('enhVigV').textContent='0';E.render();History.snapshot('One-tap enhance');toast('✨ Enhanced!','ok')},
   apply(){History.snapshot('Enhancement applied');toast('Enhancement applied','ok')},
-
-  reset(){
-    this._vals={brightness:0,contrast:0,saturation:0,sharpness:0,temperature:0,vignette:0};
-    this._active=false;
-    ['enhBri','enhCon','enhSat','enhShp','enhTmp','enhVig'].forEach(id=>{$(id).value=0});
-    ['enhBriV','enhConV','enhSatV','enhShpV','enhTmpV','enhVigV'].forEach(id=>{$(id).textContent='0'});
-    E.render();toast('Enhancement reset','info');
-  }
+  reset(){this._vals={brightness:0,contrast:0,saturation:0,sharpness:0,temperature:0,vignette:0};this._active=false;['enhBri','enhCon','enhSat','enhShp','enhTmp','enhVig'].forEach(id=>{$(id).value=0});['enhBriV','enhConV','enhSatV','enhShpV','enhTmpV','enhVigV'].forEach(id=>{$(id).textContent='0'});E.render();toast('Enhancement reset','info')}
 };
 
-/* ── Background Editor ────────────────────────────────── */
+/* ── Background Editor ── */
 const BgEditor={
-  _locked:true,_blurVal:0,_blurScope:'all',_preserveFg:true,_applied:false,
-  _colorVal:'#1a1a2e',_colorOpacity:80,
-
-  setTab(tab){
-    document.querySelectorAll('.bg-tab').forEach(t=>t.classList.remove('on'));
-    document.querySelectorAll('.bg-content').forEach(c=>c.classList.remove('on'));
-    event.target.closest('.bg-tab').classList.add('on');
-    const map={preserve:'bgPreserve',blur:'bgBlur',color:'bgColor',replace:'bgReplace'};
-    if(map[tab])$(map[tab]).classList.add('on');
-  },
-
-  setLock(on){
-    this._locked=on;
-    const bgSt=$('bgStatus');
-    if(on){bgSt.innerHTML='<i class="fas fa-shield-halved"></i> Background: Preserved';bgSt.style.color='var(--cy)'}
-    else{bgSt.innerHTML='<i class="fas fa-lock-open"></i> Background: Unlocked';bgSt.style.color='var(--wa)'}
-  },
-
+  _locked:true,_blurVal:0,_blurScope:'all',_preserveFg:true,_applied:false,_colorVal:'#1a1a2e',_colorOpacity:80,_replacementImg:null,
+  setTab(tab){document.querySelectorAll('.bg-tab').forEach(t=>t.classList.remove('on'));document.querySelectorAll('.bg-content').forEach(c=>c.classList.remove('on'));event.target.closest('.bg-tab').classList.add('on');const map={preserve:'bgPreserve',blur:'bgBlur',color:'bgColor',replace:'bgReplace'};if(map[tab])$(map[tab]).classList.add('on')},
+  setLock(on){this._locked=on;const bgSt=$('bgStatus');if(on){bgSt.innerHTML='<i class="fas fa-shield-halved"></i> Background: Preserved';bgSt.style.color='var(--cy)'}else{bgSt.innerHTML='<i class="fas fa-lock-open"></i> Background: Unlocked';bgSt.style.color='var(--wa)'}},
   setBlur(val){this._blurVal=val;$('bgBlurV').textContent=val+'px';this._applied=val>0;E.render()},
-
-  blurScope(scope){
-    this._blurScope=scope;
-    ['blS-all','blS-sel','blS-depth'].forEach(id=>$(id).classList.remove('on'));
-    $('blS-'+{all:'all',selected:'sel',depth:'depth'}[scope]).classList.add('on');
-    E.render();
-  },
-
+  blurScope(scope){this._blurScope=scope;['blS-all','blS-sel','blS-depth'].forEach(id=>$(id).classList.remove('on'));$('blS-'+{all:'all',selected:'sel',depth:'depth'}[scope]).classList.add('on');E.render()},
   setPreserveFg(on){this._preserveFg=on;E.render()},
-
   setColor(val){this._colorVal=val;$('bgColH').textContent=val;E.render()},
   setColorOpacity(val){this._colorOpacity=val;$('bgColOpV').textContent=val+'%';E.render()},
-
-  _renderBlur(cx,s){
-    // Apply CSS-filter-based blur to background regions
-    // This is a simplified version — real implementation would use offscreen canvas
-    if(this._blurVal<=0)return;
-    cx.save();
-    cx.filter=`blur(${this._blurVal*s}px)`;
-    cx.globalAlpha=0.85;
-    cx.drawImage(E.img,0,0,E.cv.width,E.cv.height);
-    cx.filter='none';
-    cx.globalAlpha=1;
-    // Re-draw foreground objects on top (preserve foreground)
-    if(this._preserveFg){
-      for(const b of E.boxes){
-        if(!b.modified)continue;
-        const bx=b.x*s,by=b.y*s,bw=b.w*s,bh=b.h*s;
-        cx.drawImage(E.img,b.x,b.y,b.w,b.h,bx,by,bw,bh);
-      }
-    }
-    cx.restore();
-  },
-
+  _renderBlur(cx,s){if(this._blurVal<=0)return;cx.save();cx.filter=`blur(${this._blurVal*s}px)`;cx.globalAlpha=0.85;cx.drawImage(E.img,0,0,E.cv.width,E.cv.height);cx.filter='none';cx.globalAlpha=1;if(this._preserveFg){for(const b of E.boxes){if(!b.modified)continue;const bx=b.x*s,by=b.y*s,bw=b.w*s,bh=b.h*s;cx.drawImage(E.img,b.x,b.y,b.w,b.h,bx,by,bw,bh)}}cx.restore()},
   uploadBg(){$('bgUpload').click()},
-
   apply(){this._applied=true;History.snapshot('Background edit');toast('Background updated','ok')},
+  reset(){this._blurVal=0;this._applied=false;this._colorOpacity=80;this._replacementImg=null;$('bgBlurR').value=0;$('bgBlurV').textContent='0px';$('bgColOp').value=80;$('bgColOpV').textContent='80%';E.render();toast('Background reset','info')}
+};
+$('bgUpload').addEventListener('change',e=>{if(!e.target.files[0])return;const reader=new FileReader();reader.onload=ev=>{toast('Background image loaded','ok')};reader.readAsDataURL(e.target.files[0])});
+(function(){const colors=['#0a0a0a','#1a1a2e','#16213e','#0f3460','#533483','#2c003e','#e94560','#f5f5f5','#dfe6e9','#ffeaa7','#fab1a0','#81ecec'];const el=$('bgSwatches');colors.forEach(c=>{const s=document.createElement('div');s.className='color-sw';s.style.background=c;s.onclick=()=>{BgEditor.setColor(c);$('bgColPick').value=c;$('bgColH').textContent=c};el.appendChild(s)})})();
 
-  reset(){
-    this._blurVal=0;this._applied=false;this._colorOpacity=80;
-    $('bgBlurR').value=0;$('bgBlurV').textContent='0px';
-    $('bgColOp').value=80;$('bgColOpV').textContent='80%';
-    E.render();toast('Background reset','info');
-  }
+/* ── Object Editor ── */
+const ObjEditor={
+  _objects:[],_sel:-1,_mode:'none',_dragStart:null,_dragObj:null,
+  _hue:0,_sat:100,_bri:100,_scale:100,_rot:0,_opac:100,
+  async detectAll(){if(!E.img){toast('Load an image first','no');return}showLd(true,'Detecting objects…');await new Promise(r=>setTimeout(r,1200));const iw=E.img.naturalWidth,ih=E.img.naturalHeight;this._objects=[];const tempC=document.createElement('canvas');tempC.width=iw;tempC.height=ih;const tempX=tempC.getContext('2d');tempX.drawImage(E.img,0,0);const gridSize=4,cellW=Math.floor(iw/gridSize),cellH=Math.floor(ih/gridSize);let objId=0;for(let gy=0;gy<gridSize;gy++){for(let gx=0;gx<gridSize;gx++){const rx=gx*cellW+cellW*0.1,ry=gy*cellH+cellH*0.1,rw=cellW*0.8,rh=cellH*0.8;try{const px=tempX.getImageData(Math.floor(rx+rw/2),Math.floor(ry+rh/2),1,1).data;const brightness=(px[0]+px[1]+px[2])/3;const edgePx=tempX.getImageData(Math.floor(rx),Math.floor(ry),1,1).data;const edgeBri=(edgePx[0]+edgePx[1]+edgePx[2])/3;if(Math.abs(brightness-edgeBri)>30){this._objects.push({id:objId++,label:`Region ${objId}`,x:Math.round(rx),y:Math.round(ry),w:Math.round(rw),h:Math.round(rh),origX:Math.round(rx),origY:Math.round(ry),origW:Math.round(rw),origH:Math.round(rh),conf:0.7+Math.random()*0.25,color:`#${px[0].toString(16).padStart(2,'0')}${px[1].toString(16).padStart(2,'0')}${px[2].toString(16).padStart(2,'0')}`,hue:0,sat:100,bri:100,scale:100,rotation:0,opacity:100,modified:false,replacementImg:null})}}catch(e){}}}showLd(false);this._renderList();E.render();History.snapshot('Objects detected');toast(`Detected ${this._objects.length} object regions`,'ok')},
+  selectByTap(){this._mode='tap';E.cv.style.cursor='crosshair';toast('Click on an object to select it','info')},
+  maskBrush(){this._mode='brush';E.cv.style.cursor='crosshair';toast('Paint to define object mask','info')},
+  select(idx){this._sel=idx;this._renderList();E.render();if(idx<0){$('objProps').classList.remove('on');return}$('objProps').classList.add('on');const obj=this._objects[idx];$('objInfo').innerHTML=`<i class="fas fa-cube"></i> ${obj.label} · ${Math.round(obj.conf*100)}% confidence · ${obj.w}×${obj.h}px`;this._hue=obj.hue||0;this._sat=obj.sat||100;this._bri=obj.bri||100;this._scale=obj.scale||100;this._rot=obj.rotation||0;this._opac=obj.opacity||100;$('objHue').value=this._hue;$('objHueV').textContent=this._hue+'°';$('objSat').value=this._sat;$('objSatV').textContent=this._sat+'%';$('objBri').value=this._bri;$('objBriV').textContent=this._bri+'%';$('objScale').value=this._scale;$('objScaleV').textContent=this._scale+'%';$('objRot').value=this._rot;$('objRotV').textContent=this._rot+'°';$('objOpac').value=this._opac;$('objOpacV').textContent=this._opac+'%';this._buildSwatches()},
+  _buildSwatches(){const el=$('objSwatches');el.innerHTML='';['#e63946','#457b9d','#2a9d8f','#e9c46a','#f4a261','#264653','#6d6875','#b5838d','#ffb4a2','#023047','#8ecae6','#219ebc','#fb8500','#023e8a'].forEach(c=>{const s=document.createElement('div');s.className='color-sw';s.style.background=c;s.onclick=()=>{if(this._sel<0)return;this._objects[this._sel].modified=true;E.render();toast('Color applied','ok')};el.appendChild(s)})},
+  setHue(v){this._hue=v;$('objHueV').textContent=v+'°';if(this._sel>=0){this._objects[this._sel].hue=v;this._objects[this._sel].modified=true;E.render()}},
+  setSat(v){this._sat=v;$('objSatV').textContent=v+'%';if(this._sel>=0){this._objects[this._sel].sat=v;this._objects[this._sel].modified=true;E.render()}},
+  setBri(v){this._bri=v;$('objBriV').textContent=v+'%';if(this._sel>=0){this._objects[this._sel].bri=v;this._objects[this._sel].modified=true;E.render()}},
+  setScale(v){this._scale=v;$('objScaleV').textContent=v+'%';if(this._sel>=0){const obj=this._objects[this._sel];const sf=v/100;obj.w=Math.round(obj.origW*sf);obj.h=Math.round(obj.origH*sf);obj.x=Math.round(obj.origX+(obj.origW-obj.w)/2);obj.y=Math.round(obj.origY+(obj.origH-obj.h)/2);obj.scale=v;obj.modified=true;E.render()}},
+  setRotation(v){this._rot=v;$('objRotV').textContent=v+'°';if(this._sel>=0){this._objects[this._sel].rotation=v;this._objects[this._sel].modified=true;E.render()}},
+  setOpacity(v){this._opac=v;$('objOpacV').textContent=v+'%';if(this._sel>=0){this._objects[this._sel].opacity=v;this._objects[this._sel].modified=true;E.render()}},
+  recolor(){if(this._sel<0){toast('Select an object first','no');return}this._mode='recolor';toast('Adjust color sliders to recolor object','info')},
+  moveObj(){if(this._sel<0){toast('Select an object first','no');return}this._mode='move';E.cv.style.cursor='move';toast('Drag the object to reposition.','info')},
+  duplicate(){if(this._sel<0){toast('Select an object first','no');return}const orig=this._objects[this._sel];const dup=JSON.parse(JSON.stringify(orig));dup.id=this._objects.length;dup.label=orig.label+' (copy)';dup.x+=30;dup.y+=30;dup.origX=dup.x;dup.origY=dup.y;dup.modified=true;this._objects.push(dup);this._renderList();this.select(this._objects.length-1);E.render();History.snapshot('Duplicate object');toast('Object duplicated','ok')},
+  remove(){if(this._sel<0){toast('Select an object first','no');return}const label=this._objects[this._sel].label;this._objects.splice(this._sel,1);this._sel=-1;$('objProps').classList.remove('on');this._renderList();E.render();History.snapshot('Remove '+label);toast(`"${label}" removed`,'ok')},
+  editBg(){if(this._sel<0){toast('Select an object first','no');return}AppMode.set('background');toast('Editing background behind selected object','info')},
+  apply(){if(this._sel<0)return;this._objects[this._sel].modified=true;History.snapshot('Object edit applied');toast('Object edit applied','ok')},
+  cancelEdit(){if(this._sel<0)return;const obj=this._objects[this._sel];obj.x=obj.origX;obj.y=obj.origY;obj.w=obj.origW;obj.h=obj.origH;obj.hue=0;obj.sat=100;obj.bri=100;obj.scale=100;obj.rotation=0;obj.opacity=100;obj.modified=false;obj.replacementImg=null;this.select(this._sel);E.render();toast('Edit cancelled','info')},
+  replaceWith(imgUrl){if(this._sel<0)return;const obj=this._objects[this._sel];const img=new Image();img.crossOrigin='anonymous';img.onload=()=>{obj.replacementImg=img;obj.modified=true;E.render();History.snapshot('Object replaced');toast('Object replaced','ok')};img.onerror=()=>toast('Failed to load replacement image','no');img.src=imgUrl},
+  _renderObjects(cx,s){for(let i=0;i<this._objects.length;i++){const obj=this._objects[i];const isSel=i===this._sel;const ox=obj.x*s,oy=obj.y*s,ow=obj.w*s,oh=obj.h*s;if(obj.replacementImg&&obj.modified){cx.save();cx.globalAlpha=obj.opacity/100;if(obj.rotation!==0){const rcx=ox+ow/2,rcy=oy+oh/2;cx.translate(rcx,rcy);cx.rotate(obj.rotation*Math.PI/180);cx.drawImage(obj.replacementImg,-ow/2,-oh/2,ow,oh)}else{cx.drawImage(obj.replacementImg,ox,oy,ow,oh)}cx.restore()}if(obj.modified&&(obj.hue!==0||obj.sat!==100||obj.bri!==100)&&!obj.replacementImg){cx.save();cx.globalAlpha=0.4;const hueRad=obj.hue*Math.PI/180;const r=Math.round(128+Math.cos(hueRad)*100),g=Math.round(128+Math.cos(hueRad+2.094)*100),b2=Math.round(128+Math.cos(hueRad+4.189)*100);cx.fillStyle=`rgb(${r},${g},${b2})`;cx.globalCompositeOperation='color';cx.fillRect(ox,oy,ow,oh);cx.globalCompositeOperation='source-over';cx.restore()}cx.strokeStyle=isSel?'#22d3ee':obj.modified?'rgba(34,211,238,.6)':'rgba(34,211,238,.25)';cx.lineWidth=isSel?2.5:1;cx.setLineDash(isSel?[8,4]:[4,4]);cx.strokeRect(ox,oy,ow,oh);cx.setLineDash([]);const label=obj.label;cx.font=`bold ${Math.max(9,10*s)}px Inter,sans-serif`;const lw=cx.measureText(label).width;const lbh=Math.max(14,15*s);cx.fillStyle=isSel?'rgba(34,211,238,.9)':'rgba(34,211,238,.55)';cx.fillRect(ox,oy-lbh-1,lw+10*s,lbh);cx.fillStyle='#000';cx.textBaseline='middle';cx.textAlign='left';cx.fillText(label,ox+4*s,oy-lbh/2-1);if(isSel){const hs=8;[{x:ox,y:oy},{x:ox+ow,y:oy},{x:ox,y:oy+oh},{x:ox+ow,y:oy+oh}].forEach(h=>{cx.fillStyle='#22d3ee';cx.fillRect(h.x-hs/2,h.y-hs/2,hs,hs);cx.strokeStyle='#fff';cx.lineWidth=1.5;cx.strokeRect(h.x-hs/2,h.y-hs/2,hs,hs)})}}},
+  _renderList(){const el=$('objList');if(!this._objects.length){el.innerHTML='<div class="nd"><i class="fas fa-cube" style="font-size:1.5rem;display:block;margin-bottom:.5rem;color:var(--bdr2)"></i> Tap "Detect Objects" or click on the image</div>';return}el.innerHTML='';this._objects.forEach((obj,i)=>{const div=document.createElement('div');div.className=`obj-item${i===this._sel?' sel':''}`;div.innerHTML=`<span class="obj-badge">${i+1}</span><span class="obj-name">${obj.label}</span><span class="obj-type">${obj.modified?'edited':Math.round(obj.conf*100)+'%'}</span>`;div.onclick=()=>this.select(i);el.appendChild(div)})},
+  hitTest(x,y){for(let i=this._objects.length-1;i>=0;i--){const o=this._objects[i];if(x>=o.x&&x<=o.x+o.w&&y>=o.y&&y<=o.y+o.h)return i}return-1}
 };
 
-// Init BG upload handler
-$('bgUpload').addEventListener('change',e=>{
-  if(!e.target.files[0])return;
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    toast('Background image loaded','ok');
-    // In production: composite the new bg behind foreground objects
-  };
-  reader.readAsDataURL(e.target.files[0]);
+/* ── Image Search ── */
+const ImgSearch={
+  _purpose:'general',_cat:'all',_results:[],_loading:false,
+  _apiKey:'demo',_apiUrl:'https://api.unsplash.com/search/photos',
+  open(purpose){this._purpose=purpose||'general';$('searchModal').classList.add('on');$('searchQ').focus();const ctx=$('searchContext');if(this._purpose==='replace'){ctx.textContent='🔄 Replacing: '+(ObjEditor._sel>=0?ObjEditor._objects[ObjEditor._sel].label:'Object')}else if(this._purpose==='background'){ctx.textContent='🖼 Searching for background images'}else{ctx.textContent=''}},
+  openForReplace(){if(ObjEditor._sel<0){toast('Select an object first','no');return}this.open('replace');$('searchQ').value=ObjEditor._objects[ObjEditor._sel].label},
+  openForBg(){this.open('background');$('searchQ').value='background wallpaper'},
+  close(){$('searchModal').classList.remove('on')},
+  setCat(cat){this._cat=cat;document.querySelectorAll('.search-cat').forEach(c=>c.classList.remove('on'));event.target.classList.add('on');if($('searchQ').value)this.search()},
+  async search(){const query=$('searchQ').value.trim();if(!query){toast('Enter a search term','no');return}const results=$('searchResults');this._loading=true;results.innerHTML='<div class="search-grid">'+Array(12).fill('<div class="search-item loading-shimmer"></div>').join('')+'</div>';let searchQuery=query;if(this._cat!=='all')searchQuery+=' '+this._cat;try{let images=[];try{const url=`${this._apiUrl}?query=${encodeURIComponent(searchQuery)}&per_page=24&client_id=${this._apiKey}`;const resp=await fetch(url);if(resp.ok){const data=await resp.json();images=data.results.map(r=>({id:r.id,thumb:r.urls.small,full:r.urls.regular,alt:r.alt_description||query,author:r.user.name,color:r.color}))}}catch(e){}if(!images.length){images=Array.from({length:24},(_,i)=>({id:'gen_'+i,thumb:`https://picsum.photos/seed/${query.replace(/\s/g,'')}${i}/300/300`,full:`https://picsum.photos/seed/${query.replace(/\s/g,'')}${i}/1200/800`,alt:query+' '+(i+1),author:'Picsum',color:'#333'}))}this._results=images;this._renderResults()}catch(e){results.innerHTML=`<div class="search-empty"><i class="fas fa-exclamation-triangle"></i><p>Search failed: ${e.message}</p></div>`}this._loading=false},
+  _renderResults(){const el=$('searchResults');if(!this._results.length){el.innerHTML='<div class="search-empty"><i class="fas fa-face-frown"></i><p>No results found</p></div>';return}const grid=document.createElement('div');grid.className='search-grid';this._results.forEach((img,i)=>{const item=document.createElement('div');item.className='search-item';item.style.backgroundColor=img.color||'#222';const imgEl=document.createElement('img');imgEl.alt=img.alt;imgEl.loading='lazy';imgEl.style.opacity='0';imgEl.onload=()=>{imgEl.style.opacity='1'};imgEl.onerror=()=>{imgEl.style.display='none';item.innerHTML+='<div style="display:grid;place-items:center;height:100%;color:var(--tx3);font-size:.7rem"><i class="fas fa-image" style="font-size:1.5rem;margin-bottom:.3rem"></i>Failed</div>'};imgEl.src=img.thumb;const useBtn=document.createElement('button');useBtn.className='search-use';useBtn.textContent=this._purpose==='replace'?'⬇ Replace':this._purpose==='background'?'⬇ Set BG':'⬇ Use';useBtn.onclick=(e)=>{e.stopPropagation();this._useImage(img)};item.appendChild(imgEl);item.appendChild(useBtn);item.onclick=()=>this._useImage(img);grid.appendChild(item)});el.innerHTML='';el.appendChild(grid);const info=document.createElement('div');info.style.cssText='text-align:center;padding:.8rem;font-size:.72rem;color:var(--tx3)';info.textContent=`${this._results.length} results · Images from Unsplash / Picsum`;el.appendChild(info)},
+  _useImage(img){if(this._purpose==='replace'){ObjEditor.replaceWith(img.full);this.close()}else if(this._purpose==='background'){this._setBgImage(img.full);this.close()}else{navigator.clipboard.writeText(img.full).catch(()=>{});toast('Image URL copied!','ok');this.close()}},
+  _setBgImage(url){const img=new Image();img.crossOrigin='anonymous';img.onload=()=>{BgEditor._replacementImg=img;BgEditor._applied=true;E.render();History.snapshot('Background replaced');toast('Background set','ok')};img.onerror=()=>toast('Failed to load background image','no');img.src=url}
+};
+
+/* ── Enhanced Keyboard Shortcuts ── */
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'&&!e.shiftKey){e.preventDefault();History.undo();return}
+  if((e.ctrlKey||e.metaKey)&&(e.key==='y'||(e.key==='z'&&e.shiftKey))){e.preventDefault();History.redo();return}
+  if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();E.download();return}
+  if((e.ctrlKey||e.metaKey)&&e.key==='f'){e.preventDefault();ImgSearch.open();return}
+  if(e.key==='Delete'||e.key==='Backspace'){if(AppMode._cur==='text'&&E.sel>=0){e.preventDefault();E.deleteBox(E.sel)}else if(AppMode._cur==='object'&&ObjEditor._sel>=0){e.preventDefault();ObjEditor.remove()}return}
+  if(e.key==='Escape'){if($('searchModal').classList.contains('on')){ImgSearch.close();return}if($('histPanel').classList.contains('on')){History.togglePanel();return}CtxMenu.hide();if(AppMode._cur==='object')ObjEditor.select(-1);if(AppMode._cur==='text')E.select(-1);return}
+  if(e.key==='1'){e.preventDefault();AppMode.set('text')}
+  if(e.key==='2'){e.preventDefault();AppMode.set('object')}
+  if(e.key==='3'){e.preventDefault();AppMode.set('background')}
+  if(e.key===' '&&AppMode._cur==='text'){e.preventDefault();E.toggleBoxes()}
+  if(e.key==='d'&&AppMode._cur==='object'&&ObjEditor._sel>=0){e.preventDefault();ObjEditor.duplicate()}
+  if(e.key==='h'){e.preventDefault();History.togglePanel()}
+  if(e.key==='e'){e.preventDefault();Enhance.toggle()}
+  if(AppMode._cur==='object'&&ObjEditor._sel>=0&&['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();const obj=ObjEditor._objects[ObjEditor._sel];const step=e.shiftKey?10:1;switch(e.key){case'ArrowUp':obj.y-=step;obj.origY-=step;break;case'ArrowDown':obj.y+=step;obj.origY+=step;break;case'ArrowLeft':obj.x-=step;obj.origX-=step;break;case'ArrowRight':obj.x+=step;obj.origX+=step;break}obj.modified=true;E.render()}
+  if(AppMode._cur==='text'&&E.sel>=0&&['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();const b=E.boxes[E.sel];const step=e.shiftKey?10:1;switch(e.key){case'ArrowUp':b.y-=step;break;case'ArrowDown':b.y+=step;break;case'ArrowLeft':b.x-=step;break;case'ArrowRight':b.x+=step;break}b.modified=true;E._clamp(b);E.render();E._syncUI()}
 });
 
-// Build BG color swatches
+/* ── Canvas Event Integration — Object Mode ── */
 (function(){
-  const colors=['#0a0a0a','#1a1a2e','#16213e','#0f3460','#533483','#2c003e',
-    '#e94560','#f5f5f5','#dfe6e9','#ffeaa7','#fab1a0','#81ecec'];
-  const el=$('bgSwatches');
-  colors.forEach(c=>{
-    const s=document.createElement('div');s.className='color-sw';s.style.background=c;
-    s.onclick=()=>{BgEditor.setColor(c);$('bgColPick').value=c;$('bgColH').textContent=c};
-    el.appendChild(s);
-  });
-})();
-
-/*═══════════════════════════════════════════════════════════
-  PART 2 — ObjectEditor, ImageSearch, Keyboard Shortcuts,
-           Snap Integration, BG Presets, Initialization
-═══════════════════════════════════════════════════════════*/
-
-/* ═══════════════════════════════════════════════
-   OBJECT EDITOR — Full Suite
-   ═══════════════════════════════════════════════ */
-const ObjEditor = {
-  _objects: [],        // detected objects [{id,label,x,y,w,h,mask,conf,color}]
-  _sel: -1,            // selected object index
-  _mode: 'none',       // none | move | recolor | brush
-  _dragStart: null,
-  _dragObj: null,
-  _hue: 0, _sat: 100, _bri: 100, _scale: 100, _rot: 0, _opac: 100,
-
-  /* ── Detection (simulated — real app uses SAM2/YOLO) ── */
-  async detectAll() {
-    if (!E.img) { toast('Load an image first', 'no'); return; }
-    showLd(true, 'Detecting objects…');
-
-    // Simulate object detection with grid-based sampling
-    // In production: call backend /api/detect-objects endpoint
-    await new Promise(r => setTimeout(r, 1200));
-
-    const iw = E.img.naturalWidth, ih = E.img.naturalHeight;
-    this._objects = [];
-
-    // Use canvas color analysis to find distinct regions
-    const tempC = document.createElement('canvas');
-    tempC.width = iw; tempC.height = ih;
-    const tempX = tempC.getContext('2d');
-    tempX.drawImage(E.img, 0, 0);
-
-    // Generate pseudo-objects from image regions
-    const gridSize = 4;
-    const cellW = Math.floor(iw / gridSize);
-    const cellH = Math.floor(ih / gridSize);
-    let objId = 0;
-
-    for (let gy = 0; gy < gridSize; gy++) {
-      for (let gx = 0; gx < gridSize; gx++) {
-        const rx = gx * cellW + cellW * 0.1;
-        const ry = gy * cellH + cellH * 0.1;
-        const rw = cellW * 0.8;
-        const rh = cellH * 0.8;
-
-        // Sample center pixel for color
-        try {
-          const px = tempX.getImageData(
-            Math.floor(rx + rw / 2),
-            Math.floor(ry + rh / 2), 1, 1
-          ).data;
-          const brightness = (px[0] + px[1] + px[2]) / 3;
-
-          // Only create object if region has enough contrast
-          const edgePx = tempX.getImageData(Math.floor(rx), Math.floor(ry), 1, 1).data;
-          const edgeBri = (edgePx[0] + edgePx[1] + edgePx[2]) / 3;
-
-          if (Math.abs(brightness - edgeBri) > 30) {
-            this._objects.push({
-              id: objId++,
-              label: `Region ${objId}`,
-              x: Math.round(rx), y: Math.round(ry),
-              w: Math.round(rw), h: Math.round(rh),
-              origX: Math.round(rx), origY: Math.round(ry),
-              origW: Math.round(rw), origH: Math.round(rh),
-              conf: 0.7 + Math.random() * 0.25,
-              color: `#${px[0].toString(16).padStart(2,'0')}${px[1].toString(16).padStart(2,'0')}${px[2].toString(16).padStart(2,'0')}`,
-              hue: 0, sat: 100, bri: 100,
-              scale: 100, rotation: 0, opacity: 100,
-              modified: false,
-              replacementImg: null
-            });
-          }
-        } catch (e) { /* skip */ }
-      }
-    }
-
-    showLd(false);
-    this._renderList();
-    E.render();
-    History.snapshot('Objects detected');
-    toast(`Detected ${this._objects.length} object regions`, 'ok');
-  },
-
-  /* ── Tap Selection on Canvas ──────────────── */
-  selectByTap() {
-    this._mode = 'tap';
-    E.cv.style.cursor = 'crosshair';
-    toast('Click on an object to select it', 'info');
-  },
-
-  maskBrush() {
-    this._mode = 'brush';
-    E.cv.style.cursor = 'crosshair';
-    toast('Paint to define object mask', 'info');
-  },
-
-  /* ── Select Object ────────────────────────── */
-  select(idx) {
-    this._sel = idx;
-    this._renderList();
-    E.render();
-
-    if (idx < 0) {
-      $('objProps').classList.remove('on');
+  const origMd=E._md.bind(E),origMm=E._mm.bind(E),origMu=E._mu.bind(E);
+  E._md=function(e){
+    // Pan takes priority
+    if(this.mode==='pan'||this._spaceDown){origMd.call(this,e);return}
+    if(e.button===1){origMd.call(this,e);return}
+    if(AppMode._cur==='object'){
+      const p=E._ic(e);
+      if(ObjEditor._mode==='tap'){const idx=ObjEditor.hitTest(p.x,p.y);if(idx>=0){ObjEditor.select(idx);ObjEditor._mode='none';E.cv.style.cursor='crosshair'}return}
+      const idx=ObjEditor.hitTest(p.x,p.y);
+      if(idx>=0){ObjEditor.select(idx);ObjEditor._dragStart={x:p.x,y:p.y};ObjEditor._dragObj={x:ObjEditor._objects[idx].x,y:ObjEditor._objects[idx].y};E.cv.style.cursor='grabbing'}else{ObjEditor.select(-1)}
       return;
     }
-
-    $('objProps').classList.add('on');
-    const obj = this._objects[idx];
-    $('objInfo').innerHTML = `<i class="fas fa-cube"></i> ${obj.label} · ${Math.round(obj.conf * 100)}% confidence · ${obj.w}×${obj.h}px`;
-
-    // Sync controls
-    this._hue = obj.hue || 0;
-    this._sat = obj.sat || 100;
-    this._bri = obj.bri || 100;
-    this._scale = obj.scale || 100;
-    this._rot = obj.rotation || 0;
-    this._opac = obj.opacity || 100;
-
-    $('objHue').value = this._hue; $('objHueV').textContent = this._hue + '°';
-    $('objSat').value = this._sat; $('objSatV').textContent = this._sat + '%';
-    $('objBri').value = this._bri; $('objBriV').textContent = this._bri + '%';
-    $('objScale').value = this._scale; $('objScaleV').textContent = this._scale + '%';
-    $('objRot').value = this._rot; $('objRotV').textContent = this._rot + '°';
-    $('objOpac').value = this._opac; $('objOpacV').textContent = this._opac + '%';
-
-    // Build color swatches
-    this._buildSwatches();
-  },
-
-  _buildSwatches() {
-    const el = $('objSwatches');
-    el.innerHTML = '';
-    const colors = ['#e63946', '#457b9d', '#2a9d8f', '#e9c46a', '#f4a261',
-      '#264653', '#6d6875', '#b5838d', '#ffb4a2', '#023047',
-      '#8ecae6', '#219ebc', '#fb8500', '#023e8a'];
-    colors.forEach(c => {
-      const s = document.createElement('div');
-      s.className = 'color-sw';
-      s.style.background = c;
-      s.onclick = () => {
-        if (this._sel < 0) return;
-        // Apply as tint color - approximate hue shift
-        this._objects[this._sel].modified = true;
-        E.render();
-        toast('Color applied', 'ok');
-      };
-      el.appendChild(s);
-    });
-  },
-
-  /* ── Property Setters ─────────────────────── */
-  setHue(v) {
-    this._hue = v; $('objHueV').textContent = v + '°';
-    if (this._sel >= 0) { this._objects[this._sel].hue = v; this._objects[this._sel].modified = true; E.render(); }
-  },
-  setSat(v) {
-    this._sat = v; $('objSatV').textContent = v + '%';
-    if (this._sel >= 0) { this._objects[this._sel].sat = v; this._objects[this._sel].modified = true; E.render(); }
-  },
-  setBri(v) {
-    this._bri = v; $('objBriV').textContent = v + '%';
-    if (this._sel >= 0) { this._objects[this._sel].bri = v; this._objects[this._sel].modified = true; E.render(); }
-  },
-  setScale(v) {
-    this._scale = v; $('objScaleV').textContent = v + '%';
-    if (this._sel >= 0) {
-      const obj = this._objects[this._sel];
-      const sf = v / 100;
-      obj.w = Math.round(obj.origW * sf);
-      obj.h = Math.round(obj.origH * sf);
-      // Keep center position
-      obj.x = Math.round(obj.origX + (obj.origW - obj.w) / 2);
-      obj.y = Math.round(obj.origY + (obj.origH - obj.h) / 2);
-      obj.scale = v; obj.modified = true;
-      E.render();
-    }
-  },
-  setRotation(v) {
-    this._rot = v; $('objRotV').textContent = v + '°';
-    if (this._sel >= 0) { this._objects[this._sel].rotation = v; this._objects[this._sel].modified = true; E.render(); }
-  },
-  setOpacity(v) {
-    this._opac = v; $('objOpacV').textContent = v + '%';
-    if (this._sel >= 0) { this._objects[this._sel].opacity = v; this._objects[this._sel].modified = true; E.render(); }
-  },
-
-  /* ── Actions ──────────────────────────────── */
-  recolor() {
-    if (this._sel < 0) { toast('Select an object first', 'no'); return; }
-    this._mode = 'recolor';
-    toast('Adjust color sliders to recolor object', 'info');
-  },
-
-  moveObj() {
-    if (this._sel < 0) { toast('Select an object first', 'no'); return; }
-    this._mode = 'move';
-    E.cv.style.cursor = 'move';
-    toast('Drag the object to reposition. Snap guides will appear.', 'info');
-  },
-
-  duplicate() {
-    if (this._sel < 0) { toast('Select an object first', 'no'); return; }
-    const orig = this._objects[this._sel];
-    const dup = JSON.parse(JSON.stringify(orig));
-    dup.id = this._objects.length;
-    dup.label = orig.label + ' (copy)';
-    dup.x += 30; dup.y += 30;
-    dup.origX = dup.x; dup.origY = dup.y;
-    dup.modified = true;
-    this._objects.push(dup);
-    this._renderList();
-    this.select(this._objects.length - 1);
-    E.render();
-    History.snapshot('Duplicate object');
-    toast('Object duplicated', 'ok');
-  },
-
-  remove() {
-    if (this._sel < 0) { toast('Select an object first', 'no'); return; }
-    const label = this._objects[this._sel].label;
-    this._objects.splice(this._sel, 1);
-    this._sel = -1;
-    $('objProps').classList.remove('on');
-    this._renderList();
-    E.render();
-    History.snapshot('Remove ' + label);
-    toast(`"${label}" removed — background inpainted`, 'ok');
-  },
-
-  editBg() {
-    if (this._sel < 0) { toast('Select an object first', 'no'); return; }
-    AppMode.set('background');
-    toast('Editing background behind selected object', 'info');
-  },
-
-  apply() {
-    if (this._sel < 0) return;
-    this._objects[this._sel].modified = true;
-    History.snapshot('Object edit applied');
-    toast('Object edit applied', 'ok');
-  },
-
-  cancelEdit() {
-    if (this._sel < 0) return;
-    const obj = this._objects[this._sel];
-    obj.x = obj.origX; obj.y = obj.origY;
-    obj.w = obj.origW; obj.h = obj.origH;
-    obj.hue = 0; obj.sat = 100; obj.bri = 100;
-    obj.scale = 100; obj.rotation = 0; obj.opacity = 100;
-    obj.modified = false; obj.replacementImg = null;
-    this.select(this._sel);
-    E.render();
-    toast('Edit cancelled', 'info');
-  },
-
-  /* ── Replace with search result ───────────── */
-  replaceWith(imgUrl) {
-    if (this._sel < 0) return;
-    const obj = this._objects[this._sel];
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      obj.replacementImg = img;
-      obj.modified = true;
-      E.render();
-      History.snapshot('Object replaced');
-      toast('Object replaced — harmonizing…', 'ok');
-    };
-    img.onerror = () => toast('Failed to load replacement image', 'no');
-    img.src = imgUrl;
-  },
-
-  /* ── Render Objects on Canvas ─────────────── */
-  _renderObjects(cx, s) {
-    for (let i = 0; i < this._objects.length; i++) {
-      const obj = this._objects[i];
-      const isSel = i === this._sel;
-      const ox = obj.x * s, oy = obj.y * s, ow = obj.w * s, oh = obj.h * s;
-
-      // Draw replacement image if exists
-      if (obj.replacementImg && obj.modified) {
-        cx.save();
-        cx.globalAlpha = obj.opacity / 100;
-
-        if (obj.rotation !== 0) {
-          const rcx = ox + ow / 2, rcy = oy + oh / 2;
-          cx.translate(rcx, rcy);
-          cx.rotate(obj.rotation * Math.PI / 180);
-          cx.drawImage(obj.replacementImg, -ow / 2, -oh / 2, ow, oh);
-        } else {
-          cx.drawImage(obj.replacementImg, ox, oy, ow, oh);
-        }
-        cx.restore();
-      }
-
-      // Apply color modifications (hue/sat/bri filter overlay)
-      if (obj.modified && (obj.hue !== 0 || obj.sat !== 100 || obj.bri !== 100) && !obj.replacementImg) {
-        cx.save();
-        cx.globalAlpha = 0.4;
-        const hueRad = obj.hue * Math.PI / 180;
-        const r = Math.round(128 + Math.cos(hueRad) * 100);
-        const g = Math.round(128 + Math.cos(hueRad + 2.094) * 100);
-        const b = Math.round(128 + Math.cos(hueRad + 4.189) * 100);
-        cx.fillStyle = `rgb(${r},${g},${b})`;
-        cx.globalCompositeOperation = 'color';
-        cx.fillRect(ox, oy, ow, oh);
-        cx.globalCompositeOperation = 'source-over';
-        cx.restore();
-      }
-
-      // Bounding box
-      cx.strokeStyle = isSel ? '#22d3ee' : obj.modified ? 'rgba(34,211,238,.6)' : 'rgba(34,211,238,.25)';
-      cx.lineWidth = isSel ? 2.5 : 1;
-      cx.setLineDash(isSel ? [8, 4] : [4, 4]);
-      cx.strokeRect(ox, oy, ow, oh);
-      cx.setLineDash([]);
-
-      // Label badge
-      const label = obj.label;
-      cx.font = `bold ${Math.max(9, 10 * s)}px Inter,sans-serif`;
-      const lw = cx.measureText(label).width;
-      const lbh = Math.max(14, 15 * s);
-      cx.fillStyle = isSel ? 'rgba(34,211,238,.9)' : 'rgba(34,211,238,.55)';
-      cx.fillRect(ox, oy - lbh - 1, lw + 10 * s, lbh);
-      cx.fillStyle = '#000';
-      cx.textBaseline = 'middle'; cx.textAlign = 'left';
-      cx.fillText(label, ox + 4 * s, oy - lbh / 2 - 1);
-
-      // Selected handles
-      if (isSel) {
-        const hs = 8;
-        const handles = [
-          { x: ox, y: oy }, { x: ox + ow, y: oy },
-          { x: ox, y: oy + oh }, { x: ox + ow, y: oy + oh }
-        ];
-        for (const h of handles) {
-          cx.fillStyle = '#22d3ee';
-          cx.fillRect(h.x - hs / 2, h.y - hs / 2, hs, hs);
-          cx.strokeStyle = '#fff'; cx.lineWidth = 1.5;
-          cx.strokeRect(h.x - hs / 2, h.y - hs / 2, hs, hs);
-        }
-      }
-    }
-  },
-
-  /* ── Object List Rendering ────────────────── */
-  _renderList() {
-    const el = $('objList');
-    if (!this._objects.length) {
-      el.innerHTML = `<div class="nd"><i class="fas fa-cube" style="font-size:1.5rem;display:block;margin-bottom:.5rem;color:var(--bdr2)"></i>
-        Tap "Detect Objects" or click on the image</div>`;
-      return;
-    }
-    el.innerHTML = '';
-    this._objects.forEach((obj, i) => {
-      const div = document.createElement('div');
-      div.className = `obj-item${i === this._sel ? ' sel' : ''}`;
-      div.innerHTML = `
-        <span class="obj-badge">${i + 1}</span>
-        <span class="obj-name">${obj.label}</span>
-        <span class="obj-type">${obj.modified ? 'edited' : Math.round(obj.conf * 100) + '%'}</span>`;
-      div.onclick = () => this.select(i);
-      el.appendChild(div);
-    });
-  },
-
-  /* ── Hit test for tap select ──────────────── */
-  hitTest(x, y) {
-    for (let i = this._objects.length - 1; i >= 0; i--) {
-      const o = this._objects[i];
-      if (x >= o.x && x <= o.x + o.w && y >= o.y && y <= o.y + o.h) return i;
-    }
-    return -1;
-  }
-};
-
-/* ═══════════════════════════════════════════════
-   IMAGE SEARCH — Unsplash API Integration
-   ═══════════════════════════════════════════════ */
-const ImgSearch = {
-  _purpose: 'general',  // general | replace | background
-  _cat: 'all',
-  _results: [],
-  _loading: false,
-
-  // Unsplash demo key — in production use your own
-  _apiKey: 'demo',
-  _apiUrl: 'https://api.unsplash.com/search/photos',
-
-  open(purpose) {
-    this._purpose = purpose || 'general';
-    $('searchModal').classList.add('on');
-    $('searchQ').focus();
-
-    // Set context label
-    const ctx = $('searchContext');
-    if (this._purpose === 'replace') {
-      ctx.textContent = '🔄 Replacing: ' + (ObjEditor._sel >= 0 ? ObjEditor._objects[ObjEditor._sel].label : 'Object');
-    } else if (this._purpose === 'background') {
-      ctx.textContent = '🖼️ Searching for background images';
-    } else {
-      ctx.textContent = '';
-    }
-  },
-
-  openForReplace() {
-    if (ObjEditor._sel < 0) { toast('Select an object first', 'no'); return; }
-    this.open('replace');
-    // Pre-fill search with object label
-    $('searchQ').value = ObjEditor._objects[ObjEditor._sel].label;
-  },
-
-  openForBg() {
-    this.open('background');
-    $('searchQ').value = 'background wallpaper';
-  },
-
-  close() {
-    $('searchModal').classList.remove('on');
-  },
-
-  setCat(cat) {
-    this._cat = cat;
-    document.querySelectorAll('.search-cat').forEach(c => c.classList.remove('on'));
-    event.target.classList.add('on');
-    // Re-search with category filter
-    if ($('searchQ').value) this.search();
-  },
-
-  async search() {
-    const query = $('searchQ').value.trim();
-    if (!query) { toast('Enter a search term', 'no'); return; }
-
-    const results = $('searchResults');
-    this._loading = true;
-
-    // Show loading skeleton
-    results.innerHTML = '<div class="search-grid">' +
-      Array(12).fill('<div class="search-item loading-shimmer"></div>').join('') + '</div>';
-
-    let searchQuery = query;
-    if (this._cat !== 'all') searchQuery += ' ' + this._cat;
-
-    try {
-      // Try Unsplash API first
-      let images = [];
-
-      try {
-        const url = `${this._apiUrl}?query=${encodeURIComponent(searchQuery)}&per_page=24&client_id=${this._apiKey}`;
-        const resp = await fetch(url);
-        if (resp.ok) {
-          const data = await resp.json();
-          images = data.results.map(r => ({
-            id: r.id,
-            thumb: r.urls.small,
-            full: r.urls.regular,
-            alt: r.alt_description || query,
-            author: r.user.name,
-            color: r.color
-          }));
-        }
-      } catch (e) {
-        console.log('Unsplash API not available, using fallback');
-      }
-
-      // Fallback: generate placeholder results with picsum
-      if (!images.length) {
-        images = Array.from({ length: 24 }, (_, i) => ({
-          id: 'gen_' + i,
-          thumb: `https://picsum.photos/seed/${query.replace(/\s/g, '')}${i}/300/300`,
-          full: `https://picsum.photos/seed/${query.replace(/\s/g, '')}${i}/1200/800`,
-          alt: query + ' ' + (i + 1),
-          author: 'Picsum',
-          color: '#333'
-        }));
-      }
-
-      this._results = images;
-      this._renderResults();
-
-    } catch (e) {
-      results.innerHTML = `<div class="search-empty">
-        <i class="fas fa-exclamation-triangle"></i>
-        <p>Search failed: ${e.message}</p>
-        <p style="font-size:.72rem;color:var(--tx3);margin-top:.3rem">Check your internet connection</p>
-      </div>`;
-    }
-
-    this._loading = false;
-  },
-
-  _renderResults() {
-    const el = $('searchResults');
-    if (!this._results.length) {
-      el.innerHTML = `<div class="search-empty">
-        <i class="fas fa-face-frown"></i>
-        <p>No results found</p>
-        <p style="font-size:.72rem;color:var(--tx3);margin-top:.3rem">Try a different search term</p>
-      </div>`;
-      return;
-    }
-
-    const grid = document.createElement('div');
-    grid.className = 'search-grid';
-
-    this._results.forEach((img, i) => {
-      const item = document.createElement('div');
-      item.className = 'search-item';
-      item.style.backgroundColor = img.color || '#222';
-
-      const imgEl = document.createElement('img');
-      imgEl.alt = img.alt;
-      imgEl.loading = 'lazy';
-      imgEl.style.opacity = '0';
-      imgEl.onload = () => { imgEl.style.opacity = '1'; };
-      imgEl.onerror = () => {
-        imgEl.style.display = 'none';
-        item.innerHTML += `<div style="display:grid;place-items:center;height:100%;color:var(--tx3);font-size:.7rem">
-          <i class="fas fa-image" style="font-size:1.5rem;margin-bottom:.3rem"></i>Failed</div>`;
-      };
-      imgEl.src = img.thumb;
-
-      const useBtn = document.createElement('button');
-      useBtn.className = 'search-use';
-      useBtn.textContent = this._purpose === 'replace' ? '⬇ Replace' : this._purpose === 'background' ? '⬇ Set BG' : '⬇ Use';
-      useBtn.onclick = (e) => {
-        e.stopPropagation();
-        this._useImage(img);
-      };
-
-      item.appendChild(imgEl);
-      item.appendChild(useBtn);
-      item.onclick = () => this._previewImage(img);
-
-      grid.appendChild(item);
-    });
-
-    el.innerHTML = '';
-    el.appendChild(grid);
-
-    // Results count
-    const info = document.createElement('div');
-    info.style.cssText = 'text-align:center;padding:.8rem;font-size:.72rem;color:var(--tx3)';
-    info.textContent = `${this._results.length} results · Images from Unsplash / Picsum`;
-    el.appendChild(info);
-  },
-
-  _previewImage(img) {
-    // For now, just use it directly
-    this._useImage(img);
-  },
-
-  _useImage(img) {
-    if (this._purpose === 'replace') {
-      ObjEditor.replaceWith(img.full);
-      this.close();
-    } else if (this._purpose === 'background') {
-      this._setBgImage(img.full);
-      this.close();
-    } else {
-      // General use — copy URL to clipboard
-      navigator.clipboard.writeText(img.full).catch(() => { });
-      toast('Image URL copied!', 'ok');
-      this.close();
-    }
-  },
-
-  _setBgImage(url) {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      // Store as background replacement
-      BgEditor._replacementImg = img;
-      BgEditor._applied = true;
-      E.render();
-      History.snapshot('Background replaced');
-      toast('Background set — auto-harmonizing…', 'ok');
-    };
-    img.onerror = () => toast('Failed to load background image', 'no');
-    img.src = url;
-  }
-};
-
-
-/* ═══════════════════════════════════════════════
-   ENHANCED KEYBOARD SHORTCUTS
-   ═══════════════════════════════════════════════ */
-document.addEventListener('keydown', e => {
-  // Don't intercept when typing in inputs
-  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
-
-  // Ctrl+Z — Undo
-  if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
-    e.preventDefault();
-    History.undo();
-    return;
-  }
-
-  // Ctrl+Shift+Z or Ctrl+Y — Redo
-  if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
-    e.preventDefault();
-    History.redo();
-    return;
-  }
-
-  // Ctrl+S — Download
-  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-    e.preventDefault();
-    E.download();
-    return;
-  }
-
-  // Ctrl+F — Search
-  if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
-    e.preventDefault();
-    ImgSearch.open();
-    return;
-  }
-
-  // Delete / Backspace — Delete selected
-  if (e.key === 'Delete' || e.key === 'Backspace') {
-    if (AppMode._cur === 'text' && E.sel >= 0) {
-      e.preventDefault();
-      E.deleteBox(E.sel);
-    } else if (AppMode._cur === 'object' && ObjEditor._sel >= 0) {
-      e.preventDefault();
-      ObjEditor.remove();
-    }
-    return;
-  }
-
-  // Escape — Deselect / Close modals
-  if (e.key === 'Escape') {
-    if ($('searchModal').classList.contains('on')) { ImgSearch.close(); return; }
-    if ($('histPanel').classList.contains('on')) { History.togglePanel(); return; }
-    CtxMenu.hide();
-    if (AppMode._cur === 'object') ObjEditor.select(-1);
-    if (AppMode._cur === 'text') E.select(-1);
-    return;
-  }
-
-  // 1/2/3 — Switch modes
-  if (e.key === '1') { e.preventDefault(); AppMode.set('text'); }
-  if (e.key === '2') { e.preventDefault(); AppMode.set('object'); }
-  if (e.key === '3') { e.preventDefault(); AppMode.set('background'); }
-
-  // Space — Toggle boxes
-  if (e.key === ' ' && AppMode._cur === 'text') { e.preventDefault(); E.toggleBoxes(); }
-
-  // D — Duplicate selected object
-  if (e.key === 'd' && AppMode._cur === 'object' && ObjEditor._sel >= 0) {
-    e.preventDefault();
-    ObjEditor.duplicate();
-  }
-
-  // H — Toggle history panel
-  if (e.key === 'h') { e.preventDefault(); History.togglePanel(); }
-
-  // E — Toggle enhance
-  if (e.key === 'e') { e.preventDefault(); Enhance.toggle(); }
-
-  // Arrow keys — nudge objects in object mode
-  if (AppMode._cur === 'object' && ObjEditor._sel >= 0 && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-    e.preventDefault();
-    const obj = ObjEditor._objects[ObjEditor._sel];
-    const step = e.shiftKey ? 10 : 1;
-    switch (e.key) {
-      case 'ArrowUp': obj.y -= step; obj.origY -= step; break;
-      case 'ArrowDown': obj.y += step; obj.origY += step; break;
-      case 'ArrowLeft': obj.x -= step; obj.origX -= step; break;
-      case 'ArrowRight': obj.x += step; obj.origX += step; break;
-    }
-    obj.modified = true;
-    E.render();
-  }
-
-  // Arrow keys — nudge text boxes in text mode
-  if (AppMode._cur === 'text' && E.sel >= 0 && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-    e.preventDefault();
-    const b = E.boxes[E.sel];
-    const step = e.shiftKey ? 10 : 1;
-    switch (e.key) {
-      case 'ArrowUp': b.y -= step; break;
-      case 'ArrowDown': b.y += step; break;
-      case 'ArrowLeft': b.x -= step; break;
-      case 'ArrowRight': b.x += step; break;
-    }
-    b.modified = true;
-    E._clamp(b);
-    E.render();
-    E._syncUI();
-  }
-});
-
-
-/* ═══════════════════════════════════════════════
-   CANVAS EVENT INTEGRATION — Object Mode
-   ═══════════════════════════════════════════════ */
-(function () {
-  // Intercept canvas mouse events for object mode
-  const origMd = E._md.bind(E);
-  const origMm = E._mm.bind(E);
-  const origMu = E._mu.bind(E);
-
-  E._md = function (e) {
-    if (AppMode._cur === 'object') {
-      const p = E._ic(e);
-
-      // Tap select mode
-      if (ObjEditor._mode === 'tap') {
-        const idx = ObjEditor.hitTest(p.x, p.y);
-        if (idx >= 0) {
-          ObjEditor.select(idx);
-          ObjEditor._mode = 'none';
-          E.cv.style.cursor = 'crosshair';
-        }
-        return;
-      }
-
-      // Check if clicking on an object
-      const idx = ObjEditor.hitTest(p.x, p.y);
-      if (idx >= 0) {
-        ObjEditor.select(idx);
-        // Start drag for move mode
-        if (ObjEditor._mode === 'move' || true) {
-          ObjEditor._dragStart = { x: p.x, y: p.y };
-          ObjEditor._dragObj = {
-            x: ObjEditor._objects[idx].x,
-            y: ObjEditor._objects[idx].y
-          };
-          E.cv.style.cursor = 'grabbing';
-        }
-      } else {
-        ObjEditor.select(-1);
-      }
-      return;
-    }
-    origMd(e);
+    origMd.call(this,e);
   };
-
-  E._mm = function (e) {
-    if (AppMode._cur === 'object') {
-      const p = E._ic(e);
-
-      // Object dragging with snap guides
-      if (ObjEditor._dragStart && ObjEditor._sel >= 0) {
-        const obj = ObjEditor._objects[ObjEditor._sel];
-        const dx = p.x - ObjEditor._dragStart.x;
-        const dy = p.y - ObjEditor._dragStart.y;
-        obj.x = ObjEditor._dragObj.x + dx;
-        obj.y = ObjEditor._dragObj.y + dy;
-
-        // Smart snap
-        if (E.img) {
-          const snap = SnapGuides.check(obj, ObjEditor._objects, E.img.naturalWidth, E.img.naturalHeight);
-          obj.x += snap.dx;
-          obj.y += snap.dy;
-          SnapGuides.render(snap.guides, E.scale);
-        }
-
-        obj.origX = obj.x;
-        obj.origY = obj.y;
-        obj.modified = true;
-        E.render();
-        return;
-      }
-
-      // Hover cursor
-      const idx = ObjEditor.hitTest(p.x, p.y);
-      E.cv.style.cursor = idx >= 0 ? 'grab' : 'crosshair';
-      return;
+  E._mm=function(e){
+    if(this._panning){origMm.call(this,e);return}
+    if(AppMode._cur==='object'){
+      const p=E._ic(e);
+      if(ObjEditor._dragStart&&ObjEditor._sel>=0){const obj=ObjEditor._objects[ObjEditor._sel];const dx=p.x-ObjEditor._dragStart.x,dy=p.y-ObjEditor._dragStart.y;obj.x=ObjEditor._dragObj.x+dx;obj.y=ObjEditor._dragObj.y+dy;if(E.img){const snap=SnapGuides.check(obj,ObjEditor._objects,E.img.naturalWidth,E.img.naturalHeight);obj.x+=snap.dx;obj.y+=snap.dy;SnapGuides.render(snap.guides,E.scale)}obj.origX=obj.x;obj.origY=obj.y;obj.modified=true;E.render();return}
+      const idx=ObjEditor.hitTest(p.x,p.y);E.cv.style.cursor=idx>=0?'grab':'crosshair';return;
     }
-
-    // Snap guides for text box movement
-    if (E.ix.type === 'move' && E.sel >= 0 && E.img) {
-      const b = E.boxes[E.sel];
-      const snap = SnapGuides.check(b, E.boxes, E.img.naturalWidth, E.img.naturalHeight);
-      b.x += snap.dx;
-      b.y += snap.dy;
-      SnapGuides.render(snap.guides, E.scale);
-    }
-
-    origMm(e);
+    if(E.ix.type==='move'&&E.sel>=0&&E.img){const b=E.boxes[E.sel];const snap=SnapGuides.check(b,E.boxes,E.img.naturalWidth,E.img.naturalHeight);b.x+=snap.dx;b.y+=snap.dy;SnapGuides.render(snap.guides,E.scale)}
+    origMm.call(this,e);
   };
-
-  E._mu = function (e) {
-    if (AppMode._cur === 'object') {
-      if (ObjEditor._dragStart) {
-        ObjEditor._dragStart = null;
-        ObjEditor._dragObj = null;
-        E.cv.style.cursor = 'crosshair';
-        SnapGuides.clear();
-        History.snapshot('Move object');
-      }
-      return;
-    }
-
-    SnapGuides.clear();
-    origMu(e);
+  E._mu=function(e){
+    if(this._panning){origMu.call(this,e);return}
+    if(AppMode._cur==='object'){if(ObjEditor._dragStart){ObjEditor._dragStart=null;ObjEditor._dragObj=null;E.cv.style.cursor='crosshair';SnapGuides.clear();History.snapshot('Move object')}return}
+    SnapGuides.clear();origMu.call(this,e);
   };
 })();
 
-
-/* ═══════════════════════════════════════════════
-   BACKGROUND PRESETS
-   ═══════════════════════════════════════════════ */
-(function () {
-  const presets = [
-    { name: 'Gradient Blue', css: 'linear-gradient(135deg,#667eea,#764ba2)', color: '#667eea' },
-    { name: 'Sunset', css: 'linear-gradient(135deg,#f093fb,#f5576c)', color: '#f5576c' },
-    { name: 'Ocean', css: 'linear-gradient(135deg,#4facfe,#00f2fe)', color: '#4facfe' },
-    { name: 'Forest', css: 'linear-gradient(135deg,#43e97b,#38f9d7)', color: '#43e97b' },
-    { name: 'Night', css: 'linear-gradient(135deg,#0c0c1d,#1a1a3e)', color: '#1a1a3e' },
-    { name: 'Warm', css: 'linear-gradient(135deg,#f6d365,#fda085)', color: '#fda085' },
-    { name: 'Cool', css: 'linear-gradient(135deg,#a8edea,#fed6e3)', color: '#a8edea' },
-    { name: 'Dark', css: 'linear-gradient(135deg,#0a0a0a,#1a1a2e)', color: '#0a0a0a' },
+/* ── Background Presets ── */
+(function(){
+  const presets=[
+    {name:'Gradient Blue',css:'linear-gradient(135deg,#667eea,#764ba2)',color:'#667eea'},
+    {name:'Sunset',css:'linear-gradient(135deg,#f093fb,#f5576c)',color:'#f5576c'},
+    {name:'Ocean',css:'linear-gradient(135deg,#4facfe,#00f2fe)',color:'#4facfe'},
+    {name:'Forest',css:'linear-gradient(135deg,#43e97b,#38f9d7)',color:'#43e97b'},
+    {name:'Night',css:'linear-gradient(135deg,#0c0c1d,#1a1a3e)',color:'#1a1a3e'},
+    {name:'Warm',css:'linear-gradient(135deg,#f6d365,#fda085)',color:'#fda085'},
+    {name:'Cool',css:'linear-gradient(135deg,#a8edea,#fed6e3)',color:'#a8edea'},
+    {name:'Dark',css:'linear-gradient(135deg,#0a0a0a,#1a1a2e)',color:'#0a0a0a'},
   ];
-
-  const grid = $('bgPresets');
-  presets.forEach(p => {
-    const div = document.createElement('div');
-    div.className = 'bg-preset';
-    div.style.background = p.css;
-    div.title = p.name;
-    div.onclick = () => {
-      BgEditor.setColor(p.color);
-      $('bgColPick').value = p.color;
-      $('bgColH').textContent = p.color;
-      document.querySelectorAll('.bg-preset').forEach(pr => pr.classList.remove('on'));
-      div.classList.add('on');
-      toast(`Background: ${p.name}`, 'info');
-    };
-    grid.appendChild(div);
-  });
+  const grid=$('bgPresets');
+  presets.forEach(p=>{const div=document.createElement('div');div.className='bg-preset';div.style.background=p.css;div.title=p.name;div.onclick=()=>{BgEditor.setColor(p.color);$('bgColPick').value=p.color;$('bgColH').textContent=p.color;document.querySelectorAll('.bg-preset').forEach(pr=>pr.classList.remove('on'));div.classList.add('on');toast(`Background: ${p.name}`,'info')};grid.appendChild(div)});
 })();
 
-
-/* ═══════════════════════════════════════════════
-   ENHANCED BG EDITOR — Replacement Rendering
-   ═══════════════════════════════════════════════ */
-BgEditor._replacementImg = null;
-
-// Override render to include background replacement
-const _origRender = E.render.bind(E);
-E.render = function () {
-  const cx = this.cx, s = this.scale;
-  if (!this.img) return;
-  cx.clearRect(0, 0, this.cv.width, this.cv.height);
-
-  // Enhancement filter
-  if (Enhance && Enhance._active) { cx.filter = Enhance._getFilter(); }
-
-  // Draw original image
-  cx.drawImage(this.img, 0, 0, this.cv.width, this.cv.height);
-  cx.filter = 'none';
-
-  // Background replacement layer
-  if (BgEditor._replacementImg && BgEditor._applied) {
-    cx.save();
-    cx.globalAlpha = 0.85;
-    cx.drawImage(BgEditor._replacementImg, 0, 0, this.cv.width, this.cv.height);
-    cx.globalAlpha = 1;
-
-    // Re-draw foreground regions (preserve text/objects)
-    if (BgEditor._preserveFg) {
-      for (const b of this.boxes) {
-        const m = 10; // margin
-        const bx = Math.max(0, b.x - m), by = Math.max(0, b.y - m);
-        const bw = Math.min(this.img.naturalWidth - bx, b.w + m * 2);
-        const bh = Math.min(this.img.naturalHeight - by, b.h + m * 2);
-        cx.drawImage(this.img, bx, by, bw, bh, bx * s, by * s, bw * s, bh * s);
-      }
-    }
-    cx.restore();
-  }
-
-  // Background blur
-  if (BgEditor._blurVal > 0 && BgEditor._applied && !BgEditor._replacementImg) {
-    BgEditor._renderBlur(cx, s);
-  }
-
-  // Background color overlay
-  if (BgEditor._applied && BgEditor._colorOpacity > 0 && AppMode._cur === 'background' && !BgEditor._replacementImg) {
-    cx.save();
-    cx.globalAlpha = BgEditor._colorOpacity / 100;
-    cx.fillStyle = BgEditor._colorVal;
-    cx.fillRect(0, 0, this.cv.width, this.cv.height);
-    cx.globalAlpha = 1;
-
-    // Re-draw foreground
-    if (BgEditor._preserveFg) {
-      for (const b of this.boxes) {
-        const m = 5;
-        const bx = Math.max(0, b.x - m), by = Math.max(0, b.y - m);
-        const bw = Math.min(this.img.naturalWidth - bx, b.w + m * 2);
-        const bh = Math.min(this.img.naturalHeight - by, b.h + m * 2);
-        cx.drawImage(this.img, bx, by, bw, bh, bx * s, by * s, bw * s, bh * s);
-      }
-    }
-    cx.restore();
-  }
-
-  // Draw modified text boxes
-  for (let i = 0; i < this.boxes.length; i++) {
-    const b = this.boxes[i];
-    if (!b.modified) continue;
-    this._renderBox(this.cx, b, s);
-  }
-
-  // Render objects (object mode)
-  if (ObjEditor && ObjEditor._objects.length && AppMode._cur === 'object') {
-    ObjEditor._renderObjects(cx, s);
-  }
-
-  // Bounding boxes (text mode or always)
-  if (this.showB && (AppMode._cur === 'text' || AppMode._cur === 'object')) {
-    for (let i = 0; i < this.boxes.length; i++) {
-      const b = this.boxes[i]; const isSel = i === this.sel;
-      const bx = b.x * s, by = b.y * s, bw = b.w * s, bh = b.h * s;
-      cx.strokeStyle = isSel ? '#e63946' : b.modified ? 'rgba(249,202,36,.55)' : b.isCustom ? 'rgba(34,211,238,.45)' : 'rgba(46,204,113,.35)';
-      cx.lineWidth = isSel ? 2.5 : 1;
-      cx.setLineDash(isSel ? [6, 4] : b.isCustom ? [4, 4] : []);
-      cx.strokeRect(bx, by, bw, bh);
-      cx.setLineDash([]);
-
-      const label = b.isCustom ? `C${i + 1}` : `#${i + 1}`;
-      cx.font = `bold ${Math.max(9, 10 * s)}px Inter,sans-serif`;
-      const tlw = cx.measureText(label).width;
-      cx.fillStyle = isSel ? 'rgba(230,57,70,.85)' : b.isCustom ? 'rgba(34,211,238,.75)' : 'rgba(46,204,113,.6)';
-      const lbh = Math.max(14, 15 * s);
-      cx.fillRect(bx, by - lbh - 1, tlw + 8 * s, lbh);
-      cx.fillStyle = '#fff'; cx.textBaseline = 'middle'; cx.textAlign = 'left';
-      cx.fillText(label, bx + 4 * s, by - lbh / 2 - 1);
-    }
-  }
-
-  // Resize handles
-  if (this.sel >= 0 && AppMode._cur === 'text') this._drawHandles(this.boxes[this.sel]);
-
-  // Drawing rectangle
-  if (this.drawing && this.ds && this.de) {
-    const x1 = this.ds.x * s, y1 = this.ds.y * s, x2 = this.de.x * s, y2 = this.de.y * s;
-    cx.strokeStyle = '#22d3ee'; cx.lineWidth = 2; cx.setLineDash([6, 4]);
-    cx.strokeRect(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1), Math.abs(y2 - y1));
-    cx.fillStyle = 'rgba(34,211,238,.06)';
-    cx.fillRect(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1), Math.abs(y2 - y1));
-    cx.setLineDash([]);
-  }
-
-  // Scope dimming (background mode)
-  if (AppMode._cur === 'background' && !BgEditor._locked) {
-    // Dim overlay to show editing scope
-    cx.save();
-    cx.fillStyle = 'rgba(0,0,0,.15)';
-    cx.fillRect(0, 0, this.cv.width, this.cv.height);
-    cx.restore();
-  }
+/* ── Enhanced Render with BG replacement ── */
+const _origRender=E.render.bind(E);
+E.render=function(){
+  const cx=this.cx,s=this.scale;if(!this.img)return;
+  cx.clearRect(0,0,this.cv.width,this.cv.height);
+  if(Enhance&&Enhance._active){cx.filter=Enhance._getFilter()}
+  cx.drawImage(this.img,0,0,this.cv.width,this.cv.height);cx.filter='none';
+  if(BgEditor._replacementImg&&BgEditor._applied){cx.save();cx.globalAlpha=0.85;cx.drawImage(BgEditor._replacementImg,0,0,this.cv.width,this.cv.height);cx.globalAlpha=1;if(BgEditor._preserveFg){for(const b of this.boxes){const m=10;const bx=Math.max(0,b.x-m),by=Math.max(0,b.y-m);const bw=Math.min(this.img.naturalWidth-bx,b.w+m*2);const bh=Math.min(this.img.naturalHeight-by,b.h+m*2);cx.drawImage(this.img,bx,by,bw,bh,bx*s,by*s,bw*s,bh*s)}}cx.restore()}
+  if(BgEditor._blurVal>0&&BgEditor._applied&&!BgEditor._replacementImg){BgEditor._renderBlur(cx,s)}
+  if(BgEditor._applied&&BgEditor._colorOpacity>0&&AppMode._cur==='background'&&!BgEditor._replacementImg){cx.save();cx.globalAlpha=BgEditor._colorOpacity/100;cx.fillStyle=BgEditor._colorVal;cx.fillRect(0,0,this.cv.width,this.cv.height);cx.globalAlpha=1;if(BgEditor._preserveFg){for(const b of this.boxes){const m=5;const bx=Math.max(0,b.x-m),by=Math.max(0,b.y-m);const bw=Math.min(this.img.naturalWidth-bx,b.w+m*2);const bh=Math.min(this.img.naturalHeight-by,b.h+m*2);cx.drawImage(this.img,bx,by,bw,bh,bx*s,by*s,bw*s,bh*s)}}cx.restore()}
+  for(let i=0;i<this.boxes.length;i++){const b=this.boxes[i];if(!b.modified)continue;this._renderBox(this.cx,b,s)}
+  if(ObjEditor&&ObjEditor._objects.length&&AppMode._cur==='object'){ObjEditor._renderObjects(cx,s)}
+  if(this.showB&&(AppMode._cur==='text'||AppMode._cur==='object')){for(let i=0;i<this.boxes.length;i++){const b=this.boxes[i];const isSel=i===this.sel;const bx=b.x*s,by=b.y*s,bw=b.w*s,bh=b.h*s;cx.strokeStyle=isSel?'#e63946':b.modified?'rgba(249,202,36,.55)':b.isCustom?'rgba(34,211,238,.45)':'rgba(46,204,113,.35)';cx.lineWidth=isSel?2.5:1;cx.setLineDash(isSel?[6,4]:b.isCustom?[4,4]:[]);cx.strokeRect(bx,by,bw,bh);cx.setLineDash([]);const label=b.isCustom?`C${i+1}`:`#${i+1}`;cx.font=`bold ${Math.max(9,10*s)}px Inter,sans-serif`;const tlw=cx.measureText(label).width;cx.fillStyle=isSel?'rgba(230,57,70,.85)':b.isCustom?'rgba(34,211,238,.75)':'rgba(46,204,113,.6)';const lbh=Math.max(14,15*s);cx.fillRect(bx,by-lbh-1,tlw+8*s,lbh);cx.fillStyle='#fff';cx.textBaseline='middle';cx.textAlign='left';cx.fillText(label,bx+4*s,by-lbh/2-1)}}
+  if(this.sel>=0&&AppMode._cur==='text')this._drawHandles(this.boxes[this.sel]);
+  if(this.drawing&&this.ds&&this.de){const x1=this.ds.x*s,y1=this.ds.y*s,x2=this.de.x*s,y2=this.de.y*s;cx.strokeStyle='#22d3ee';cx.lineWidth=2;cx.setLineDash([6,4]);cx.strokeRect(Math.min(x1,x2),Math.min(y1,y2),Math.abs(x2-x1),Math.abs(y2-y1));cx.fillStyle='rgba(34,211,238,.06)';cx.fillRect(Math.min(x1,x2),Math.min(y1,y2),Math.abs(x2-x1),Math.abs(y2-y1));cx.setLineDash([])}
+  if(AppMode._cur==='background'&&!BgEditor._locked){cx.save();cx.fillStyle='rgba(0,0,0,.15)';cx.fillRect(0,0,this.cv.width,this.cv.height);cx.restore()}
 };
 
-
-/* ═══════════════════════════════════════════════
-   ENHANCED DOWNLOAD — Include All Layers
-   ═══════════════════════════════════════════════ */
-const _origDownload = E.download.bind(E);
-E.download = function () {
-  const c = document.createElement('canvas');
-  c.width = this.img.naturalWidth;
-  c.height = this.img.naturalHeight;
-  const cx = c.getContext('2d');
-
-  // Enhancement filter
-  if (Enhance._active) { cx.filter = Enhance._getFilter(); }
-  cx.drawImage(this.img, 0, 0);
-  cx.filter = 'none';
-
-  // Background replacement
-  if (BgEditor._replacementImg && BgEditor._applied) {
-    cx.save();
-    cx.globalAlpha = 0.85;
-    cx.drawImage(BgEditor._replacementImg, 0, 0, c.width, c.height);
-    cx.globalAlpha = 1;
-    if (BgEditor._preserveFg) {
-      for (const b of this.boxes) {
-        const m = 10;
-        const bx = Math.max(0, b.x - m), by = Math.max(0, b.y - m);
-        const bw = Math.min(c.width - bx, b.w + m * 2);
-        const bh = Math.min(c.height - by, b.h + m * 2);
-        cx.drawImage(this.img, bx, by, bw, bh, bx, by, bw, bh);
-      }
-    }
-    cx.restore();
-  }
-
-  // Object replacements
-  for (const obj of ObjEditor._objects) {
-    if (obj.replacementImg && obj.modified) {
-      cx.save();
-      cx.globalAlpha = obj.opacity / 100;
-      if (obj.rotation !== 0) {
-        const rcx = obj.x + obj.w / 2, rcy = obj.y + obj.h / 2;
-        cx.translate(rcx, rcy);
-        cx.rotate(obj.rotation * Math.PI / 180);
-        cx.drawImage(obj.replacementImg, -obj.w / 2, -obj.h / 2, obj.w, obj.h);
-      } else {
-        cx.drawImage(obj.replacementImg, obj.x, obj.y, obj.w, obj.h);
-      }
-      cx.restore();
-    }
-  }
-
-  // Text boxes
-  for (let i = 0; i < this.boxes.length; i++) {
-    const b = this.boxes[i];
-    if (!b.modified) continue;
-    this._renderBox(cx, b, 1);
-  }
-
-  const a = document.createElement('a');
-  a.download = 'edited_pro.png';
-  a.href = c.toDataURL('image/png');
-  a.click();
-  toast('Downloaded with all edits!');
+/* ── Enhanced Download ── */
+E.download=function(){
+  const c=document.createElement('canvas');c.width=this.img.naturalWidth;c.height=this.img.naturalHeight;const cx=c.getContext('2d');
+  if(Enhance._active){cx.filter=Enhance._getFilter()}cx.drawImage(this.img,0,0);cx.filter='none';
+  if(BgEditor._replacementImg&&BgEditor._applied){cx.save();cx.globalAlpha=0.85;cx.drawImage(BgEditor._replacementImg,0,0,c.width,c.height);cx.globalAlpha=1;if(BgEditor._preserveFg){for(const b of this.boxes){const m=10;const bx=Math.max(0,b.x-m),by=Math.max(0,b.y-m);const bw=Math.min(c.width-bx,b.w+m*2);const bh=Math.min(c.height-by,b.h+m*2);cx.drawImage(this.img,bx,by,bw,bh,bx,by,bw,bh)}}cx.restore()}
+  for(const obj of ObjEditor._objects){if(obj.replacementImg&&obj.modified){cx.save();cx.globalAlpha=obj.opacity/100;if(obj.rotation!==0){const rcx2=obj.x+obj.w/2,rcy=obj.y+obj.h/2;cx.translate(rcx2,rcy);cx.rotate(obj.rotation*Math.PI/180);cx.drawImage(obj.replacementImg,-obj.w/2,-obj.h/2,obj.w,obj.h)}else{cx.drawImage(obj.replacementImg,obj.x,obj.y,obj.w,obj.h)}cx.restore()}}
+  for(let i=0;i<this.boxes.length;i++){const b=this.boxes[i];if(!b.modified)continue;this._renderBox(cx,b,1)}
+  const a=document.createElement('a');a.download='edited_pro.png';a.href=c.toDataURL('image/png');a.click();toast('Downloaded with all edits!')
 };
 
+/* ── Show undo bar on editor open ── */
+const _origShowEd=showEd;
+showEd=function(on){_origShowEd(on);$('undoBar').classList.toggle('on',on)};
 
-/* ═══════════════════════════════════════════════
-   SHOW UNDO BAR ON EDITOR OPEN
-   ═══════════════════════════════════════════════ */
-const _origShowEd = showEd;
-showEd = function (on) {
-  _origShowEd(on);
-  $('undoBar').classList.toggle('on', on);
-};
-
-
-/* ═══════════════════════════════════════════════
-   BEFORE/AFTER COMPARATOR (hold to compare)
-   ═══════════════════════════════════════════════ */
-(function () {
-  let comparing = false;
-  let origImageData = null;
-
-  document.addEventListener('keydown', e => {
-    if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
-    if (e.key === 'c' && !e.ctrlKey && !comparing && E.img) {
-      comparing = true;
-      // Save current canvas
-      origImageData = E.cx.getImageData(0, 0, E.cv.width, E.cv.height);
-      // Draw original only
-      E.cx.clearRect(0, 0, E.cv.width, E.cv.height);
-      E.cx.drawImage(E.img, 0, 0, E.cv.width, E.cv.height);
-      toast('Showing original — release C to return', 'info');
-    }
-  });
-
-  document.addEventListener('keyup', e => {
-    if (e.key === 'c' && comparing && origImageData) {
-      comparing = false;
-      E.cx.putImageData(origImageData, 0, 0);
-      origImageData = null;
-    }
-  });
+/* ── Before/After Comparator (hold C) ── */
+(function(){let comparing=false,origImageData=null;
+  document.addEventListener('keydown',e=>{if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')return;if(e.key==='c'&&!e.ctrlKey&&!comparing&&E.img){comparing=true;origImageData=E.cx.getImageData(0,0,E.cv.width,E.cv.height);E.cx.clearRect(0,0,E.cv.width,E.cv.height);E.cx.drawImage(E.img,0,0,E.cv.width,E.cv.height);toast('Showing original — release C to return','info')}});
+  document.addEventListener('keyup',e=>{if(e.key==='c'&&comparing&&origImageData){comparing=false;E.cx.putImageData(origImageData,0,0);origImageData=null}});
 })();
 
-
-/* ═══════════════════════════════════════════════
-   INITIALIZATION — CONNECT EVERYTHING
-   ═══════════════════════════════════════════════ */
-(function init() {
-  console.log('🚀 OCR Image Text Editor Pro — Fully Loaded');
-  console.log('═══════════════════════════════════════════');
-  console.log('  Modules:');
-  console.log('  ✅ Editor (text)');
-  console.log('  ✅ AppMode (text/object/background)');
-  console.log('  ✅ ObjEditor (detect/edit/move/replace/remove)');
-  console.log('  ✅ BgEditor (preserve/blur/color/replace)');
-  console.log('  ✅ ImgSearch (Unsplash/Picsum)');
-  console.log('  ✅ Enhance (one-tap + sliders)');
-  console.log('  ✅ History (undo/redo/timeline)');
-  console.log('  ✅ SnapGuides (smart alignment)');
-  console.log('  ✅ CtxMenu (right-click)');
-  console.log('  ✅ Before/After (hold C)');
-  console.log('═══════════════════════════════════════════');
-  console.log('  Shortcuts:');
-  console.log('  1/2/3     Switch mode (Text/Object/BG)');
-  console.log('  Ctrl+Z    Undo');
-  console.log('  Ctrl+Y    Redo');
-  console.log('  Ctrl+S    Download');
-  console.log('  Ctrl+F    Image Search');
-  console.log('  H         History panel');
-  console.log('  E         Enhance panel');
-  console.log('  C (hold)  Before/After compare');
-  console.log('  D         Duplicate object');
-  console.log('  Del       Delete selected');
-  console.log('  Space     Toggle boxes');
-  console.log('  Arrows    Nudge (Shift=10px)');
-  console.log('  +/-       Zoom in/out');
-  console.log('═══════════════════════════════════════════');
+/* ── Init ── */
+(function init(){
+  console.log('🚀 OCR Image Text Editor Pro — Fully Loaded with Pan/Move');
+  console.log('  Pan: Click Pan button, Space+drag, or Middle-mouse drag');
+  console.log('  Shortcuts: 1/2/3=Mode, Ctrl+Z=Undo, Ctrl+Y=Redo, Ctrl+S=Save');
+  console.log('  H=History, E=Enhance, C(hold)=Compare, D=Duplicate, Space=Boxes');
 })();
 </script>
 </body>
