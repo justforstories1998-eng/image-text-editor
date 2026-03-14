@@ -1044,7 +1044,102 @@ _highlightList(){document.querySelectorAll('.di').forEach(d=>{d.classList.toggle
 _updStats(){const t=this.boxes.length,m=this.boxes.filter(b=>b.modified).length,f=this.boxes.filter(b=>b.autoFit).length,c=this.boxes.filter(b=>b.isCustom).length;$('stats').innerHTML=`<div class="sc"><i class="fas fa-font"></i> <b>${t}</b></div><div class="sc"><i class="fas fa-pen"></i> <b>${m}</b></div><div class="sc"><i class="fas fa-text-width"></i> <b>${f}</b></div>${c?`<div class="sc"><i class="fas fa-vector-square"></i> <b>${c}</b></div>`:''}`}
 tab(t){document.querySelectorAll('.sp-t').forEach((e,i)=>e.classList.toggle('on',i===(t==='all'?0:1)));$('tAll').classList.toggle('on',t==='all');$('tMod').classList.toggle('on',t==='mod');if(t==='mod')this._updMod()}
 download(){const c=document.createElement('canvas');c.width=this.img.naturalWidth;c.height=this.img.naturalHeight;const cx=c.getContext('2d');cx.drawImage(this.img,0,0);const origScale=this.scale;this.scale=1;const origCx=this.cx;this.cx=cx;for(let i=0;i<this.boxes.length;i++){const b=this.boxes[i];if(!b.modified)continue;this._renderBox(cx,b,1)}this.cx=origCx;this.scale=origScale;const a=document.createElement('a');a.download='edited.png';a.href=c.toDataURL('image/png');a.click();toast('Downloaded!')}
-_renderBox(cx,b,s){const bx=b.x*s,by=b.y*s,bw=b.w*s,bh=b.h*s;const br=Math.min(b.borderRadius*s,bw/2,bh/2);if(b.bgOpacity>0){cx.save();cx.globalAlpha=b.bgOpacity;cx.fillStyle=b.bgColor;if(br>0){this._rr(cx,bx,by,bw,bh,br);cx.fill()}else cx.fillRect(bx,by,bw,bh);cx.restore()}if(b.borderWidth>0){cx.strokeStyle=b.borderColor;cx.lineWidth=b.borderWidth*s;if(br>0){this._rr(cx,bx,by,bw,bh,br);cx.stroke()}else cx.strokeRect(bx,by,bw,bh)}const pl=b.padLeft*s,pr2=b.padRight*s,pt=b.padTop*s,pb=b.padBottom*s;const tx=bx+pl,tw=bw-pl-pr2,ty=by+pt,th=bh-pt-pb;if(tw<=0||th<=0)return;const fs=b.fontSize*s;cx.save();cx.beginPath();if(br>0)this._rr(cx,bx,by,bw,bh,br);else cx.rect(bx,by,bw,bh);cx.clip();cx.font=`${b.italic?'italic ':''}${b.bold?'bold ':''}${fs}px "${b.fontFamily}"`;cx.fillStyle=b.fontColor;cx.textBaseline='top';const lines=this._wrap(cx,b.text||'',tw,b.letterSpacing*s);const lh=fs*(b.lineHeight/100);const totalH=lines.length*lh;let startY=ty+(th-totalH)/2;if(startY<ty)startY=ty;for(let li=0;li<lines.length;li++){const cy2=startY+li*lh;const line=lines[li];const lw=this._mTxt(cx,line,b.letterSpacing*s);let lx;if(b.alignment==='left')lx=tx;else if(b.alignment==='right')lx=tx+tw-lw;else if(b.alignment==='justify'&&li<lines.length-1){this._justifyLine(cx,line,tx,cy2+fs*0.12,tw,b.letterSpacing*s,fs);continue}else lx=tx+(tw-lw)/2;if(b.letterSpacing>0){let px=lx;cx.textAlign='left';for(const c of line){cx.fillText(c,px,cy2+fs*0.12);px+=cx.measureText(c).width+b.letterSpacing*s}}else{cx.textAlign='left';cx.fillText(line,lx,cy2+fs*0.12)}if(b.underline){cx.strokeStyle=b.fontColor;cx.lineWidth=Math.max(1,fs*0.06);cx.beginPath();cx.moveTo(lx,cy2+fs*0.95);cx.lineTo(lx+lw,cy2+fs*0.95);cx.stroke()}}cx.restore()}
+_renderBox(cx,b,s){
+  const bx=Math.round(b.x*s),by=Math.round(b.y*s);
+  const bw=Math.round(b.w*s),bh=Math.round(b.h*s);
+  const br=Math.min((b.borderRadius||0)*s,bw/2,bh/2);
+  if(bw<=2||bh<=2)return;
+
+  // ═══ STEP 1: ERASE OLD TEXT — Reconstruct background ═══
+  // Sample a padded area from original image so blur edges are clean
+  const padPx=Math.max(15,Math.round(b.fontSize*s*0.4));
+  const srcX=Math.max(0,b.x-padPx/s);
+  const srcY=Math.max(0,b.y-padPx/s);
+  const srcW=Math.min(this.img.naturalWidth-srcX,b.w+padPx*2/s);
+  const srcH=Math.min(this.img.naturalHeight-srcY,b.h+padPx*2/s);
+  const dstW=Math.round(srcW*s),dstH=Math.round(srcH*s);
+  const offX=Math.round((b.x-srcX)*s),offY=Math.round((b.y-srcY)*s);
+
+  // Create temp canvas with padded original region
+  const tmp=document.createElement('canvas');
+  tmp.width=dstW;tmp.height=dstH;
+  const tc=tmp.getContext('2d');
+
+  // Pass 1: Heavy blur to smear text into background
+  const blurR=Math.max(4,Math.round(b.fontSize*s*0.4));
+  tc.filter=`blur(${blurR}px)`;
+  tc.drawImage(this.img,srcX,srcY,srcW,srcH,0,0,dstW,dstH);
+  tc.filter='none';
+
+  // Pass 2: Draw original on top with slight transparency to restore bg detail
+  // Text areas (which differ from blur) get softened, bg areas stay sharp
+  tc.globalAlpha=0.3;
+  tc.drawImage(this.img,srcX,srcY,srcW,srcH,0,0,dstW,dstH);
+  tc.globalAlpha=1;
+
+  // Pass 3: One more light blur to blend seams
+  const tmp2=document.createElement('canvas');
+  tmp2.width=dstW;tmp2.height=dstH;
+  const tc2=tmp2.getContext('2d');
+  tc2.filter=`blur(${Math.max(1,Math.round(blurR*0.3))}px)`;
+  tc2.drawImage(tmp,0,0);
+  tc2.filter='none';
+
+  // ═══ STEP 2: Paint clean background onto main canvas ═══
+  cx.save();
+  cx.beginPath();
+  if(br>0)this._rr(cx,bx,by,bw,bh,br);
+  else cx.rect(bx,by,bw,bh);
+  cx.clip();
+
+  // Draw reconstructed background (clipped to box region only)
+  cx.drawImage(tmp2,offX,offY,bw,bh,bx,by,bw,bh);
+
+  // Optional: user-defined background color overlay
+  if(b.bgOpacity>0){
+    cx.globalAlpha=b.bgOpacity;
+    cx.fillStyle=b.bgColor;
+    cx.fillRect(bx,by,bw,bh);
+    cx.globalAlpha=1;
+  }
+  cx.restore();
+
+  // ═══ STEP 3: Border ═══
+  if(b.borderWidth>0){
+    cx.strokeStyle=b.borderColor;cx.lineWidth=b.borderWidth*s;
+    if(br>0){this._rr(cx,bx,by,bw,bh,br);cx.stroke()}
+    else cx.strokeRect(bx,by,bw,bh);
+  }
+
+  // ═══ STEP 4: Draw NEW text ═══
+  const pl=b.padLeft*s,pr2=b.padRight*s,pt=b.padTop*s,pb=b.padBottom*s;
+  const tx=bx+pl,tw=bw-pl-pr2,ty=by+pt,th=bh-pt-pb;
+  if(tw<=0||th<=0)return;
+  const fs=b.fontSize*s;
+  cx.save();
+  cx.beginPath();
+  if(br>0)this._rr(cx,bx,by,bw,bh,br);else cx.rect(bx,by,bw,bh);
+  cx.clip();
+  cx.font=`${b.italic?'italic ':''}${b.bold?'bold ':''}${fs}px "${b.fontFamily}"`;
+  cx.fillStyle=b.fontColor;cx.textBaseline='top';
+  const lines=this._wrap(cx,b.text||'',tw,b.letterSpacing*s);
+  const lh=fs*(b.lineHeight/100);const totalH=lines.length*lh;
+  let startY=ty+(th-totalH)/2;if(startY<ty)startY=ty;
+  for(let li=0;li<lines.length;li++){
+    const cy2=startY+li*lh;
+    const line=lines[li];
+    const lw=this._mTxt(cx,line,b.letterSpacing*s);
+    let lx;
+    if(b.alignment==='left')lx=tx;
+    else if(b.alignment==='right')lx=tx+tw-lw;
+    else if(b.alignment==='justify'&&li<lines.length-1&&lines.length>1){this._justifyLine(cx,line,tx,cy2+fs*0.12,tw,b.letterSpacing*s,fs);continue}
+    else lx=tx+(tw-lw)/2;
+    if(b.letterSpacing>0){let px=lx;cx.textAlign='left';for(const c of line){cx.fillText(c,px,cy2+fs*0.12);px+=cx.measureText(c).width+b.letterSpacing*s}}
+    else{cx.textAlign='left';cx.fillText(line,lx,cy2+fs*0.12)}
+    if(b.underline){cx.strokeStyle=b.fontColor;cx.lineWidth=Math.max(1,fs*0.06);cx.beginPath();cx.moveTo(lx,cy2+fs*0.95);cx.lineTo(lx+lw,cy2+fs*0.95);cx.stroke()}
+  }
+  cx.restore();
+}
 async downloadHD(){const mods=this.boxes.filter(b=>b.modified).map(b=>({bbox:[[b.x,b.y],[b.x+b.w,b.y],[b.x+b.w,b.y+b.h],[b.x,b.y+b.h]],newText:b.text,fontSize:b.fontSize,fontColor:b.fontColor,bgColor:b.bgColor,bold:b.bold,alignment:b.alignment}));if(!mods.length){toast('No edits','no');return}showLd(true,'Rendering HD…');try{const r=await fetch(`${API}/api/edit`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:this.b64,edits:mods})});const d=await r.json();if(d.error){toast(d.error,'no');showLd(false);return}const a=document.createElement('a');a.download='edited_hd.png';a.href=`data:image/png;base64,${d.image}`;a.click();showLd(false);toast('HD downloaded!')}catch(e){toast('Server error','no');showLd(false)}}
 }
 const E=new Editor();
@@ -1288,7 +1383,7 @@ E.render=function(){
   if(BgEditor._replacementImg&&BgEditor._applied){cx.save();cx.globalAlpha=0.85;cx.drawImage(BgEditor._replacementImg,0,0,this.cv.width,this.cv.height);cx.globalAlpha=1;if(BgEditor._preserveFg){for(const b of this.boxes){const m=10;const bx=Math.max(0,b.x-m),by=Math.max(0,b.y-m);const bw=Math.min(this.img.naturalWidth-bx,b.w+m*2);const bh=Math.min(this.img.naturalHeight-by,b.h+m*2);cx.drawImage(this.img,bx,by,bw,bh,bx*s,by*s,bw*s,bh*s)}}cx.restore()}
   if(BgEditor._blurVal>0&&BgEditor._applied&&!BgEditor._replacementImg){BgEditor._renderBlur(cx,s)}
   if(BgEditor._applied&&BgEditor._colorOpacity>0&&AppMode._cur==='background'&&!BgEditor._replacementImg){cx.save();cx.globalAlpha=BgEditor._colorOpacity/100;cx.fillStyle=BgEditor._colorVal;cx.fillRect(0,0,this.cv.width,this.cv.height);cx.globalAlpha=1;if(BgEditor._preserveFg){for(const b of this.boxes){const m=5;const bx=Math.max(0,b.x-m),by=Math.max(0,b.y-m);const bw=Math.min(this.img.naturalWidth-bx,b.w+m*2);const bh=Math.min(this.img.naturalHeight-by,b.h+m*2);cx.drawImage(this.img,bx,by,bw,bh,bx*s,by*s,bw*s,bh*s)}}cx.restore()}
-  for(let i=0;i<this.boxes.length;i++){const b=this.boxes[i];if(!b.modified)continue;this._renderBox(this.cx,b,s)}
+  for(let i=0;i<this.boxes.length;i++){const b=this.boxes[i];if(!b.modified)continue;this._renderBox(cx,b,s)}
   if(ObjEditor&&ObjEditor._objects.length&&AppMode._cur==='object'){ObjEditor._renderObjects(cx,s)}
   if(this.showB&&(AppMode._cur==='text'||AppMode._cur==='object')){for(let i=0;i<this.boxes.length;i++){const b=this.boxes[i];const isSel=i===this.sel;const bx=b.x*s,by=b.y*s,bw=b.w*s,bh=b.h*s;cx.strokeStyle=isSel?'#e63946':b.modified?'rgba(249,202,36,.55)':b.isCustom?'rgba(34,211,238,.45)':'rgba(46,204,113,.35)';cx.lineWidth=isSel?2.5:1;cx.setLineDash(isSel?[6,4]:b.isCustom?[4,4]:[]);cx.strokeRect(bx,by,bw,bh);cx.setLineDash([]);const label=b.isCustom?`C${i+1}`:`#${i+1}`;cx.font=`bold ${Math.max(9,10*s)}px Inter,sans-serif`;const tlw=cx.measureText(label).width;cx.fillStyle=isSel?'rgba(230,57,70,.85)':b.isCustom?'rgba(34,211,238,.75)':'rgba(46,204,113,.6)';const lbh=Math.max(14,15*s);cx.fillRect(bx,by-lbh-1,tlw+8*s,lbh);cx.fillStyle='#fff';cx.textBaseline='middle';cx.textAlign='left';cx.fillText(label,bx+4*s,by-lbh/2-1)}}
   if(this.sel>=0&&AppMode._cur==='text')this._drawHandles(this.boxes[this.sel]);
